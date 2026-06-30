@@ -1,0 +1,11 @@
+{
+  "name": "expense-tracker",
+  "private": true,
+  "scripts": {
+    "web": "pnpm --filter web start",
+    "api": "pnpm --filter api start:dev"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.0"
+  }
+}
