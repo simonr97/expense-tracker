@@ -24,13 +24,22 @@ Full-stack personal expense management app. Built to explore Angular 22's signal
 - Frontend: Vercel · Backend: Render · DB: Neon
 
 ## Structure
-expense-tracker/
-├─ apps/
-│  ├─ web/    → Angular 22
-│  └─ api/    → NestJS
-└─ pnpm-workspace.yaml
 
-Organized by feature modules: each domain module encapsulates its controller, service and DTOs.
+A pnpm workspace with two applications:
+
+| Path | Description |
+|------|-------------|
+| `apps/web` | Angular 22 frontend |
+| `apps/api` | NestJS backend |
+
+The backend is organized by **feature modules** — each domain module encapsulates its own controller, service and DTOs:
+
+    apps/api/src/
+    └── expenses/
+        ├── dto/
+        │   └── create-expense.dto.ts
+        ├── expenses.controller.ts
+        └── expenses.module.ts
 
 ## Requirements
 
