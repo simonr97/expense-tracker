@@ -1,2 +1,21 @@
-node_modules
-apps/api/dist
+# dependencias
+node_modules/
+
+# builds
+dist/
+out-tsc/
+*.tsbuildinfo
+.angular/
+
+# Prisma: el cliente se genera en el build
+apps/api/generated/
+
+# variables de entorno
+.env
+.env.*
+!.env.example
+
+# logs, cobertura y sistema
+*.log
+coverage/
+.DS_Store
