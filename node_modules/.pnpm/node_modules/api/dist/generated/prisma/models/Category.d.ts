@@ -9,27 +9,51 @@ export type AggregateCategory = {
 export type CategoryMinAggregateOutputType = {
     id: string | null;
     name: string | null;
+    color: string | null;
+    icon: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
 };
 export type CategoryMaxAggregateOutputType = {
     id: string | null;
     name: string | null;
+    color: string | null;
+    icon: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
 };
 export type CategoryCountAggregateOutputType = {
     id: number;
     name: number;
+    color: number;
+    icon: number;
+    createdAt: number;
+    updatedAt: number;
     _all: number;
 };
 export type CategoryMinAggregateInputType = {
     id?: true;
     name?: true;
+    color?: true;
+    icon?: true;
+    createdAt?: true;
+    updatedAt?: true;
 };
 export type CategoryMaxAggregateInputType = {
     id?: true;
     name?: true;
+    color?: true;
+    icon?: true;
+    createdAt?: true;
+    updatedAt?: true;
 };
 export type CategoryCountAggregateInputType = {
     id?: true;
     name?: true;
+    color?: true;
+    icon?: true;
+    createdAt?: true;
+    updatedAt?: true;
     _all?: true;
 };
 export type CategoryAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -59,6 +83,10 @@ export type CategoryGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type CategoryGroupByOutputType = {
     id: string;
     name: string;
+    color: string;
+    icon: string;
+    createdAt: Date;
+    updatedAt: Date;
     _count: CategoryCountAggregateOutputType | null;
     _min: CategoryMinAggregateOutputType | null;
     _max: CategoryMaxAggregateOutputType | null;
@@ -72,11 +100,19 @@ export type CategoryWhereInput = {
     NOT?: Prisma.CategoryWhereInput | Prisma.CategoryWhereInput[];
     id?: Prisma.StringFilter<"Category"> | string;
     name?: Prisma.StringFilter<"Category"> | string;
+    color?: Prisma.StringFilter<"Category"> | string;
+    icon?: Prisma.StringFilter<"Category"> | string;
+    createdAt?: Prisma.DateTimeFilter<"Category"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"Category"> | Date | string;
     expense?: Prisma.ExpenseListRelationFilter;
 };
 export type CategoryOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    color?: Prisma.SortOrder;
+    icon?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
     expense?: Prisma.ExpenseOrderByRelationAggregateInput;
 };
 export type CategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -85,11 +121,19 @@ export type CategoryWhereUniqueInput = Prisma.AtLeast<{
     AND?: Prisma.CategoryWhereInput | Prisma.CategoryWhereInput[];
     OR?: Prisma.CategoryWhereInput[];
     NOT?: Prisma.CategoryWhereInput | Prisma.CategoryWhereInput[];
+    color?: Prisma.StringFilter<"Category"> | string;
+    icon?: Prisma.StringFilter<"Category"> | string;
+    createdAt?: Prisma.DateTimeFilter<"Category"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"Category"> | Date | string;
     expense?: Prisma.ExpenseListRelationFilter;
 }, "id" | "name">;
 export type CategoryOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    color?: Prisma.SortOrder;
+    icon?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
     _count?: Prisma.CategoryCountOrderByAggregateInput;
     _max?: Prisma.CategoryMaxOrderByAggregateInput;
     _min?: Prisma.CategoryMinOrderByAggregateInput;
@@ -100,50 +144,94 @@ export type CategoryScalarWhereWithAggregatesInput = {
     NOT?: Prisma.CategoryScalarWhereWithAggregatesInput | Prisma.CategoryScalarWhereWithAggregatesInput[];
     id?: Prisma.StringWithAggregatesFilter<"Category"> | string;
     name?: Prisma.StringWithAggregatesFilter<"Category"> | string;
+    color?: Prisma.StringWithAggregatesFilter<"Category"> | string;
+    icon?: Prisma.StringWithAggregatesFilter<"Category"> | string;
+    createdAt?: Prisma.DateTimeWithAggregatesFilter<"Category"> | Date | string;
+    updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Category"> | Date | string;
 };
 export type CategoryCreateInput = {
     id?: string;
     name: string;
+    color: string;
+    icon: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
     expense?: Prisma.ExpenseCreateNestedManyWithoutCategoryInput;
 };
 export type CategoryUncheckedCreateInput = {
     id?: string;
     name: string;
+    color: string;
+    icon: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
     expense?: Prisma.ExpenseUncheckedCreateNestedManyWithoutCategoryInput;
 };
 export type CategoryUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    color?: Prisma.StringFieldUpdateOperationsInput | string;
+    icon?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     expense?: Prisma.ExpenseUpdateManyWithoutCategoryNestedInput;
 };
 export type CategoryUncheckedUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    color?: Prisma.StringFieldUpdateOperationsInput | string;
+    icon?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     expense?: Prisma.ExpenseUncheckedUpdateManyWithoutCategoryNestedInput;
 };
 export type CategoryCreateManyInput = {
     id?: string;
     name: string;
+    color: string;
+    icon: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
 };
 export type CategoryUpdateManyMutationInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    color?: Prisma.StringFieldUpdateOperationsInput | string;
+    icon?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type CategoryUncheckedUpdateManyInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    color?: Prisma.StringFieldUpdateOperationsInput | string;
+    icon?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type CategoryCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    color?: Prisma.SortOrder;
+    icon?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
 };
 export type CategoryMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    color?: Prisma.SortOrder;
+    icon?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
 };
 export type CategoryMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     name?: Prisma.SortOrder;
+    color?: Prisma.SortOrder;
+    icon?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
 };
 export type CategoryScalarRelationFilter = {
     is?: Prisma.CategoryWhereInput;
@@ -151,6 +239,9 @@ export type CategoryScalarRelationFilter = {
 };
 export type StringFieldUpdateOperationsInput = {
     set?: string;
+};
+export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string;
 };
 export type CategoryCreateNestedOneWithoutExpenseInput = {
     create?: Prisma.XOR<Prisma.CategoryCreateWithoutExpenseInput, Prisma.CategoryUncheckedCreateWithoutExpenseInput>;
@@ -167,10 +258,18 @@ export type CategoryUpdateOneRequiredWithoutExpenseNestedInput = {
 export type CategoryCreateWithoutExpenseInput = {
     id?: string;
     name: string;
+    color: string;
+    icon: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
 };
 export type CategoryUncheckedCreateWithoutExpenseInput = {
     id?: string;
     name: string;
+    color: string;
+    icon: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
 };
 export type CategoryCreateOrConnectWithoutExpenseInput = {
     where: Prisma.CategoryWhereUniqueInput;
@@ -188,10 +287,18 @@ export type CategoryUpdateToOneWithWhereWithoutExpenseInput = {
 export type CategoryUpdateWithoutExpenseInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    color?: Prisma.StringFieldUpdateOperationsInput | string;
+    icon?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type CategoryUncheckedUpdateWithoutExpenseInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     name?: Prisma.StringFieldUpdateOperationsInput | string;
+    color?: Prisma.StringFieldUpdateOperationsInput | string;
+    icon?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type CategoryCountOutputType = {
     expense: number;
@@ -208,22 +315,38 @@ export type CategoryCountOutputTypeCountExpenseArgs<ExtArgs extends runtime.Type
 export type CategorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     name?: boolean;
+    color?: boolean;
+    icon?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
     expense?: boolean | Prisma.Category$expenseArgs<ExtArgs>;
     _count?: boolean | Prisma.CategoryCountOutputTypeDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["category"]>;
 export type CategorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     name?: boolean;
+    color?: boolean;
+    icon?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
 }, ExtArgs["result"]["category"]>;
 export type CategorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     name?: boolean;
+    color?: boolean;
+    icon?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
 }, ExtArgs["result"]["category"]>;
 export type CategorySelectScalar = {
     id?: boolean;
     name?: boolean;
+    color?: boolean;
+    icon?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
 };
-export type CategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name", ExtArgs["result"]["category"]>;
+export type CategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "color" | "icon" | "createdAt" | "updatedAt", ExtArgs["result"]["category"]>;
 export type CategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     expense?: boolean | Prisma.Category$expenseArgs<ExtArgs>;
     _count?: boolean | Prisma.CategoryCountOutputTypeDefaultArgs<ExtArgs>;
@@ -238,6 +361,10 @@ export type $CategoryPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: string;
         name: string;
+        color: string;
+        icon: string;
+        createdAt: Date;
+        updatedAt: Date;
     }, ExtArgs["result"]["category"]>;
     composites: {};
 };
@@ -298,6 +425,10 @@ export interface Prisma__CategoryClient<T, Null = never, ExtArgs extends runtime
 export interface CategoryFieldRefs {
     readonly id: Prisma.FieldRef<"Category", 'String'>;
     readonly name: Prisma.FieldRef<"Category", 'String'>;
+    readonly color: Prisma.FieldRef<"Category", 'String'>;
+    readonly icon: Prisma.FieldRef<"Category", 'String'>;
+    readonly createdAt: Prisma.FieldRef<"Category", 'DateTime'>;
+    readonly updatedAt: Prisma.FieldRef<"Category", 'DateTime'>;
 }
 export type CategoryFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.CategorySelect<ExtArgs> | null;

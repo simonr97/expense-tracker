@@ -1,0 +1,72 @@
+<div class="flex items-center gap-2">
+  <div class="relative inline-block">
+    <button
+      type="button"
+      (click)="toggle()"
+      [disabled]="!selectedMonth()"
+      aria-haspopup="listbox"
+      [attr.aria-expanded]="isOpen()"
+      class="flex h-10 items-center gap-3 rounded-md border border-border-light bg-bg-surface px-3 shadow-sm transition-colors hover:border-primary-border focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12 disabled:cursor-default disabled:opacity-60"
+      [class.border-border-focus]="isOpen()"
+    >
+      <span class="flex text-text-secondary">
+        <app-icon-renderer [iconName]="'calendar-days'" [iconColor]="'currentColor'" [size]="20" />
+      </span>
+      <span class="min-w-28 text-left text-md font-medium text-text-primary">
+        {{ selectedMonth()?.label ?? 'No expenses' }}
+      </span>
+      <span class="flex text-text-tertiary transition-transform duration-200" [class.rotate-180]="isOpen()">
+        <app-icon-renderer [iconName]="'chevron-down'" [iconColor]="'currentColor'" [size]="16" />
+      </span>
+    </button>
+
+    @if (isOpen()) {
+      <ul
+        role="listbox"
+        class="absolute left-0 top-full z-20 mt-2 max-h-72 w-full min-w-max overflow-y-auto rounded-[14px] border border-border-light bg-bg-surface p-1.5 shadow-md"
+      >
+        @for (option of monthOptions(); track option.date.getTime()) {
+          @let isSelected = option.date.getTime() === selectedMonth()?.date?.getTime();
+          <li
+            role="option"
+            [attr.aria-selected]="isSelected"
+            (click)="select(option)"
+            class="flex h-11 cursor-pointer items-center justify-between gap-3 rounded-[10px] px-2.5 text-sm transition-colors hover:bg-bg-hover"
+            [class.font-semibold]="isSelected"
+            [class.bg-primary-selected]="isSelected"
+            [class.text-primary]="isSelected"
+            [class.text-text-primary]="!isSelected"
+          >
+            {{ option.label }}
+            @if (isSelected) {
+              <app-icon-renderer [iconName]="'check'" [iconColor]="'currentColor'" [size]="16" />
+            }
+          </li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div
+    class="flex h-10 divide-x divide-border-light overflow-hidden rounded-md border border-border-light bg-bg-surface shadow-sm transition-colors has-focus-visible:border-border-focus has-focus-visible:ring-4 has-focus-visible:ring-primary/12"
+  >
+    <button
+      type="button"
+      aria-label="Previous month"
+      [disabled]="!selectedMonth() || isOldestMonth()"
+      (click)="goToPreviousMonth()"
+      class="flex w-10 items-center justify-center text-text-secondary transition-colors hover:bg-bg-hover hover:text-primary focus-visible:bg-bg-hover focus-visible:text-primary focus-visible:outline-none disabled:cursor-default disabled:bg-transparent disabled:text-text-disabled"
+    >
+      <app-icon-renderer [iconName]="'chevron-left'" [iconColor]="'currentColor'" [size]="16" />
+    </button>
+    <button
+      type="button"
+      aria-label="Next month"
+      [disabled]="!selectedMonth() || isLatestMonth()"
+      (click)="goToNextMonth()"
+      class="flex w-10 items-center justify-center text-text-secondary transition-colors hover:bg-bg-hover hover:text-primary focus-visible:bg-bg-hover focus-visible:text-primary focus-visible:outline-none disabled:cursor-default disabled:bg-transparent disabled:text-text-disabled"
+    >
+      <app-icon-renderer [iconName]="'chevron-right'" [iconColor]="'currentColor'" [size]="16" />
+    </button>
+  </div>
+</div>

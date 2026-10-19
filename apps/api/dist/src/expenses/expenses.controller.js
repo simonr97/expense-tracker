@@ -12,23 +12,47 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.expenseController = void 0;
+exports.ExpensesController = void 0;
 const common_1 = require("@nestjs/common");
 const create_expense_dto_1 = require("./dto/create-expense-dto");
-let expenseController = class expenseController {
-    create(dto) {
-        return { id: 1, ...dto };
+const expenses_service_1 = require("./expenses.service");
+let ExpensesController = class ExpensesController {
+    expenses;
+    constructor(expenses) {
+        this.expenses = expenses;
+    }
+    async createExpense(dto) {
+        return await this.expenses.createExpense(dto);
+    }
+    async getExpenses() {
+        return await this.expenses.getExpenses();
+    }
+    async getDateRange() {
+        return await this.expenses.getDateRange();
     }
 };
-exports.expenseController = expenseController;
+exports.ExpensesController = ExpensesController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_expense_dto_1.CreateExpenseDTO]),
-    __metadata("design:returntype", void 0)
-], expenseController.prototype, "create", null);
-exports.expenseController = expenseController = __decorate([
-    (0, common_1.Controller)('expenses')
-], expenseController);
+    __metadata("design:returntype", Promise)
+], ExpensesController.prototype, "createExpense", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ExpensesController.prototype, "getExpenses", null);
+__decorate([
+    (0, common_1.Get)('date-range'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ExpensesController.prototype, "getDateRange", null);
+exports.ExpensesController = ExpensesController = __decorate([
+    (0, common_1.Controller)('expenses'),
+    __metadata("design:paramtypes", [expenses_service_1.ExpensesService])
+], ExpensesController);
 //# sourceMappingURL=expenses.controller.js.map

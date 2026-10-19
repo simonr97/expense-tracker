@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defineExtension = exports.QueryMode = exports.SortOrder = exports.ExpenseScalarFieldEnum = exports.CategoryScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
+exports.defineExtension = exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.ExpenseScalarFieldEnum = exports.MerchantScalarFieldEnum = exports.AccountScalarFieldEnum = exports.CategoryScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/client"));
 exports.PrismaClientKnownRequestError = runtime.PrismaClientKnownRequestError;
 exports.PrismaClientUnknownRequestError = runtime.PrismaClientUnknownRequestError;
@@ -61,6 +61,8 @@ exports.JsonNull = runtime.JsonNull;
 exports.AnyNull = runtime.AnyNull;
 exports.ModelName = {
     Category: 'Category',
+    Account: 'Account',
+    Merchant: 'Merchant',
     Expense: 'Expense'
 };
 exports.TransactionIsolationLevel = runtime.makeStrictEnum({
@@ -71,15 +73,36 @@ exports.TransactionIsolationLevel = runtime.makeStrictEnum({
 });
 exports.CategoryScalarFieldEnum = {
     id: 'id',
-    name: 'name'
+    name: 'name',
+    color: 'color',
+    icon: 'icon',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+exports.AccountScalarFieldEnum = {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+exports.MerchantScalarFieldEnum = {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
 };
 exports.ExpenseScalarFieldEnum = {
     id: 'id',
     description: 'description',
     amount: 'amount',
+    notes: 'notes',
+    status: 'status',
     date: 'date',
     createdAt: 'createdAt',
-    categoryId: 'categoryId'
+    updatedAt: 'updatedAt',
+    categoryId: 'categoryId',
+    accountId: 'accountId',
+    merchantId: 'merchantId'
 };
 exports.SortOrder = {
     asc: 'asc',
@@ -88,6 +111,10 @@ exports.SortOrder = {
 exports.QueryMode = {
     default: 'default',
     insensitive: 'insensitive'
+};
+exports.NullsOrder = {
+    first: 'first',
+    last: 'last'
 };
 exports.defineExtension = runtime.Extensions.defineExtension;
 //# sourceMappingURL=prismaNamespace.js.map

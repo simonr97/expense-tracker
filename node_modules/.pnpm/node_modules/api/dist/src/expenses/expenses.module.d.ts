@@ -1,2 +1,2 @@
-export declare class ExpenseModule {
+export declare class ExpensesModule {
 }

@@ -1,15 +1,13 @@
-import { httpResource } from '@angular/common/http';
-import { Component, signal } from '@angular/core';
+import { Component} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { environment } from '../environments/environment';
+import { ExpensesGrid } from './expenses/expenses-grid/expenses-grid';
+import { Sidebar } from './shell/sidebar/sidebar';
+import { Topbar } from './shell/topbar/topbar';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet,ExpensesGrid,Sidebar,Topbar],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {
-  protected readonly title = signal('web');
-  health = httpResource<{ status: string }>(() => `${environment.apiUrl}/health`);
-}
+export class App {}

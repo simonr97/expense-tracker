@@ -1,0 +1,35 @@
+<aside class="flex h-full w-64 flex-col rounded-lg border border-border-light bg-bg-surface p-4 shadow-sm">
+  <div class="mb-6 flex items-center gap-3 border-b border-border-medium px-1 pb-6">
+    <div class="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-white shadow-sm">
+      <app-icon-renderer [iconName]="'wallet'" [iconColor]="'currentColor'" [size]="20" />
+    </div>
+    <div>
+      <p class="text-base font-semibold text-text-primary">GastoPro</p>
+      <p class="text-xs text-text-tertiary">Your finances, never easier</p>
+    </div>
+  </div>
+  <nav class="flex flex-col gap-1">
+    @for (option of sidebarOptions; track option.id) {
+      @let isSelected = option.id === selectedOption();
+      <button
+        type="button"
+        (click)="selectedOption.set(option.id)"
+        [attr.aria-current]="isSelected ? 'page' : null"
+        class="flex h-11 items-center gap-3 rounded-[10px] px-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12"
+        [class.bg-primary-selected]="isSelected"
+        [class.font-semibold]="isSelected"
+        [class.text-primary]="isSelected"
+        [class.text-text-secondary]="!isSelected"
+        [class.hover:bg-bg-hover]="!isSelected"
+        [class.hover:text-primary]="!isSelected"
+      >
+        <app-icon-renderer
+          [iconName]="option.icon"
+          [iconColor]="'currentColor'"
+          [size]="20"
+        />
+        {{ option.label }}
+      </button>
+    }
+  </nav>
+</aside>

@@ -1,0 +1,17 @@
+<form (submit)="onSubmitForm($event)" class="flex w-full flex-col gap-3 rounded-md bg-bg-surface-soft p-4 text-sm">
+  <label class="flex flex-col gap-1.5">
+    <span class="text-[13px] text-text-secondary">{{label()}}</span>
+    <input
+      #nameInput
+      type="text"
+      [formField]="formCreation.name"
+      class="h-10 rounded-md border border-border-medium bg-bg-surface px-3 text-sm text-text-primary focus:border-primary focus:ring-4 focus:ring-primary/12 focus:outline-none"
+    />
+  </label>
+  <button
+    type="submit"
+    class="h-11 rounded-md bg-primary px-4 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(10,132,255,0.22)] hover:bg-primary-hover"
+  >
+    Create
+  </button>
+</form>

@@ -1,0 +1,4 @@
+.badge-surface {
+  /* Wash: the category color mixed mostly with white, so it stays a soft tint. */
+  background-color: color-mix(in srgb, var(--category-color) 15%, white);
+}

@@ -6,15 +6,43 @@
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+enum ExpenseStatus {
+  Completed
+  Pending
+}
+
+
+
 model Category {
   id String @id @default(uuid())
-  name String @unique
+  name String @db.Citext @unique
+  color String
+  icon String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expense Expense[]
+}
+
+model Account {
+  id String @id @default(uuid())
+  name String @db.Citext @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expense Expense[]
+}
+
+model Merchant {
+  id String @id @default(uuid())
+  name String @db.Citext @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   expense Expense[]
 }
 
@@ -22,9 +50,18 @@ model Expense {
   id String @id @default(uuid())
   description String
   amount Decimal @db.Decimal(10,2)
+  notes String?
+  status ExpenseStatus @default(Completed)
   date DateTime @default(now())
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   categoryId String
   category Category @relation(fields: [categoryId], references: [id])
+
+  accountId String
+  account Account @relation(fields: [accountId], references: [id])
+
+  merchantId String
+  merchant Merchant @relation(fields: [merchantId], references: [id])
 }

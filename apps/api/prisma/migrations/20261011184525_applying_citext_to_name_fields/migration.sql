@@ -1,0 +1,8 @@
+-- AlterTable
+ALTER TABLE "Account" ALTER COLUMN "name" SET DATA TYPE CITEXT;
+
+-- AlterTable
+ALTER TABLE "Category" ALTER COLUMN "name" SET DATA TYPE CITEXT;
+
+-- AlterTable
+ALTER TABLE "Merchant" ALTER COLUMN "name" SET DATA TYPE CITEXT;

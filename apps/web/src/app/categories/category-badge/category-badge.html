@@ -1,0 +1,13 @@
+<div
+  class="badge-surface inline-flex items-center gap-1.5 rounded-lg px-3 py-1"
+  [style.--category-color]="category().color"
+>
+  <app-icon-renderer [iconName]="category().icon" [iconColor]="displayColor()" [size]="iconSizePx" />
+  <span
+    class="font-medium leading-none whitespace-nowrap"
+    [style.color]="displayColor()"
+    [style.font-size.px]="textSizePx"
+  >
+    {{ category().name }}
+  </span>
+</div>

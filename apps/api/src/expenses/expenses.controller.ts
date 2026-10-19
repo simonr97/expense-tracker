@@ -1,10 +1,23 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CreateExpenseDTO } from './dto/create-expense-dto';
+import { ExpensesService } from './expenses.service';
 
 @Controller('expenses')
-export class expenseController {
+export class ExpensesController {
+  constructor(private readonly expenses: ExpensesService) {}
+
   @Post()
-  create(@Body() dto: CreateExpenseDTO) {
-    return { id: 1, ...dto };
+  async createExpense(@Body() dto: CreateExpenseDTO) {
+    return await this.expenses.createExpense(dto);
+  }
+
+  @Get()
+  async getExpenses() {
+    return await this.expenses.getExpenses();
+  }
+
+  @Get('date-range')
+  async getDateRange() {
+    return await this.expenses.getDateRange();
   }
 }

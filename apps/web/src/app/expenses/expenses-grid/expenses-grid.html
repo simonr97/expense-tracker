@@ -1,0 +1,11 @@
+<section class="rounded-lg border border-border-light bg-bg-surface p-5 shadow-sm">
+  <ag-grid-angular
+    style="width: 100%; height: 500px;"
+    [theme]="gridTheme"
+    [columnDefs]="columnDefs"
+    [rowData]="expenses.value() ?? []"
+    [rowSelection]="rowSelection"
+    [getRowId]="rowId"
+    (selectionChanged)="onSelectionChanged($event)"
+  />
+</section>

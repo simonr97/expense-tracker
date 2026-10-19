@@ -1,0 +1,17 @@
+<label
+  class="group flex h-10 w-full cursor-text items-center gap-3 rounded-md border border-border-light bg-bg-surface px-3 shadow-sm transition-colors hover:border-primary-border focus-within:border-border-focus focus-within:ring-4 focus-within:ring-primary/12"
+>
+  <span class="flex text-text-secondary transition-colors group-focus-within:text-primary">
+    <app-icon-renderer [iconName]="'search'" [iconColor]="'currentColor'" [size]="20"/>
+  </span>
+  <input
+    #searchInput
+    type="search"
+    [placeholder]="inputPlaceHolder()"
+    [aria-label]="inputPlaceHolder()"
+    [value]="inputText()"
+    autocomplete="off"
+    (input)="inputText.set(searchInput.value)"
+    class="h-full min-w-0 flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-tertiary [&::-webkit-search-cancel-button]:appearance-none"
+  >
+</label>
