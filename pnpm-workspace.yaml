@@ -9,3 +9,6 @@ allowBuilds:
   unrs-resolver: true
   prisma: true
   "@prisma/engines": true
+
+overrides:
+  "proper-lockfile>signal-exit": "3.0.7"
