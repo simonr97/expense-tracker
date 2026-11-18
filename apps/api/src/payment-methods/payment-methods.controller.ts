@@ -4,15 +4,15 @@ import { PaymentMethodsService } from './payment-methods.service';
 
 @Controller('payment-methods')
 export class PaymentMethodsController {
-    constructor(private readonly paymentMethods: PaymentMethodsService){}
+  constructor(private readonly paymentMethods: PaymentMethodsService) {}
 
-    @Post()
-    async createPaymentMethod(@Body() dto: CreatePaymentMethodDTO){
-        return await this.paymentMethods.createPaymentMethod(dto);
-    }
+  @Post()
+  async createPaymentMethod(@Body() dto: CreatePaymentMethodDTO) {
+    return await this.paymentMethods.createPaymentMethod(dto);
+  }
 
-    @Get()
-    async getPaymentMethods(){
-        return await this.paymentMethods.getPaymentMethods()
-    }
+  @Get()
+  async getPaymentMethods() {
+    return await this.paymentMethods.getPaymentMethods();
+  }
 }

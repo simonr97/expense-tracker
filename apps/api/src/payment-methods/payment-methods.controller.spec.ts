@@ -10,7 +10,10 @@ describe('PaymentMethodsController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PaymentMethodsController],
       // The real service with an empty Prisma stub: enough to build the module, no database.
-      providers: [PaymentMethodsService, { provide: PrismaService, useValue: {} }],
+      providers: [
+        PaymentMethodsService,
+        { provide: PrismaService, useValue: {} },
+      ],
     }).compile();
 
     controller = module.get<PaymentMethodsController>(PaymentMethodsController);

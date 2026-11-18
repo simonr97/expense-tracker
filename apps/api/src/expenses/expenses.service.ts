@@ -45,30 +45,29 @@ export class ExpensesService {
     return fromatedRange;
   }
 
-  async getExpensesByYearMonth(start:Date ,end:Date) {
-    const where = {date: {gte: start, lt: end}}
+  async getExpensesByYearMonth(start: Date, end: Date) {
+    const where = { date: { gte: start, lt: end } };
     const expensesFiltered = await this.prisma.expense.findMany({
       where: where,
       include: expenseRelations,
-      orderBy: { date: 'desc' }
-    })
+      orderBy: { date: 'desc' },
+    });
     return expensesFiltered;
   }
 
   async deleteExpense(id: string) {
     const deletedExpense = await this.prisma.expense.delete({
-      where: {id}
-    })
+      where: { id },
+    });
     return deletedExpense;
   }
 
-  async updateExpense(id: string,expense: UpdateExpenseDTO) {
+  async updateExpense(id: string, expense: UpdateExpenseDTO) {
     const updatedExpense = await this.prisma.expense.update({
-      where: {id},
+      where: { id },
       data: expense,
-      include: expenseRelations
-    })
+      include: expenseRelations,
+    });
     return updatedExpense;
   }
-
 }

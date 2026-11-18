@@ -4,15 +4,15 @@ import { CreateIncomeDTO } from './dto/create-income-dto';
 
 @Controller('incomes')
 export class IncomesController {
-    constructor(private readonly incomes:IncomesService){}
+  constructor(private readonly incomes: IncomesService) {}
 
-    @Post()
-    async createIncomes(@Body() dto:CreateIncomeDTO){
-        return await this.incomes.createIncome(dto);
-    }
+  @Post()
+  async createIncomes(@Body() dto: CreateIncomeDTO) {
+    return await this.incomes.createIncome(dto);
+  }
 
-    @Get()
-    async getIncomes(){
-        return await this.incomes.getIncome()
-    }
+  @Get()
+  async getIncomes() {
+    return await this.incomes.getIncome();
+  }
 }

@@ -1,4 +1,3 @@
-
 import {
   ExceptionFilter,
   Catch,
@@ -23,7 +22,9 @@ interface ErrorDescription {
   errors?: string[];
 }
 
-function isHttpExceptionResponse(value: unknown): value is HttpExceptionResponse {
+function isHttpExceptionResponse(
+  value: unknown,
+): value is HttpExceptionResponse {
   return typeof value === 'object' && value !== null;
 }
 
@@ -43,7 +44,6 @@ export class CatchEverythingFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
-
     const { httpAdapter } = this.httpAdapterHost;
 
     const ctx = host.switchToHttp();
@@ -53,7 +53,10 @@ export class CatchEverythingFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const { error, code, message, errors } = this.describe(exception, httpStatus);
+    const { error, code, message, errors } = this.describe(
+      exception,
+      httpStatus,
+    );
 
     const responseBody: ApiErrorResponse = {
       statusCode: httpStatus,
@@ -68,7 +71,10 @@ export class CatchEverythingFilter implements ExceptionFilter {
 
   private describe(exception: unknown, httpStatus: number): ErrorDescription {
     if (!(exception instanceof HttpException)) {
-      this.logger.error('Unhandled exception', exception instanceof Error ? exception.stack : String(exception));
+      this.logger.error(
+        'Unhandled exception',
+        exception instanceof Error ? exception.stack : String(exception),
+      );
       return {
         error: statusText(httpStatus),
         code: 'INTERNAL_ERROR',
@@ -80,14 +86,23 @@ export class CatchEverythingFilter implements ExceptionFilter {
     const response = exception.getResponse();
 
     if (!isHttpExceptionResponse(response)) {
-      return { error: statusText(httpStatus), code, message: String(response) };
+      return {
+        error: statusText(httpStatus),
+        code,
+        message: typeof response === 'string' ? response : 'Unexpected error',
+      };
     }
 
     const error = response.error ?? statusText(httpStatus);
 
     // ValidationPipe: one message per failed field → generic message + list in details.errors
     if (Array.isArray(response.message)) {
-      return { error, code: 'VALIDATION_FAILED', message: 'The request contains invalid fields', errors: response.message };
+      return {
+        error,
+        code: 'VALIDATION_FAILED',
+        message: 'The request contains invalid fields',
+        errors: response.message,
+      };
     }
 
     return { error, code, message: response.message ?? exception.message };

@@ -1,4 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { Prisma } from '../../generated/prisma/client';
 import { ApiErrorResponse } from './api-error-response';
@@ -15,25 +21,25 @@ const prismaErrors = {
     http: 409,
     code: 'RESOURCE_ALREADY_EXISTS',
     message: 'A record with the same unique value already exists',
-    error: 'Conflict'
+    error: 'Conflict',
   },
   P2025: {
     http: 404,
     code: 'RESOURCE_NOT_FOUND',
     message: 'The requested record was not found',
-    error: 'Not Found'
+    error: 'Not Found',
   },
   P2003: {
     http: 409,
     code: 'RELATED_RESOURCE_CONFLICT',
     message: 'The operation conflicts with a related record',
-    error: 'Conflict'
+    error: 'Conflict',
   },
   P2000: {
     http: 400,
     code: 'VALUE_TOO_LONG',
     message: 'A provided value exceeds the allowed length',
-    error: 'Bad Request'
+    error: 'Bad Request',
   },
 } satisfies Record<string, PrismaErrorMapping>;
 
@@ -54,20 +60,28 @@ function isMappedCode(code: string): code is PrismaErrorCode {
   return Object.hasOwn(prismaErrors, code);
 }
 
-function getDriverAdapterCause(e: Prisma.PrismaClientKnownRequestError): DriverAdapterCause | undefined {
+function getDriverAdapterCause(
+  e: Prisma.PrismaClientKnownRequestError,
+): DriverAdapterCause | undefined {
   const adapterError = e.meta?.driverAdapterError;
   if (!(adapterError instanceof Error)) return undefined;
-  return isDriverAdapterCause(adapterError.cause) ? adapterError.cause : undefined;
+  return isDriverAdapterCause(adapterError.cause)
+    ? adapterError.cause
+    : undefined;
 }
 
-function getModelName(e: Prisma.PrismaClientKnownRequestError): string | undefined {
+function getModelName(
+  e: Prisma.PrismaClientKnownRequestError,
+): string | undefined {
   const modelName = e.meta?.modelName;
   return typeof modelName === 'string' ? modelName : undefined;
 }
 
 // Prisma's default unique index name is `<Table>_<field>_key` (e.g. Merchant_name_key → name).
 // The index name is only used here to derive the field; it never reaches the client.
-function getUniqueField(cause: DriverAdapterCause | undefined): string | undefined {
+function getUniqueField(
+  cause: DriverAdapterCause | undefined,
+): string | undefined {
   const index = cause?.constraint?.index;
   const table = cause?.table;
   if (!index || !table) return undefined;
@@ -100,7 +114,11 @@ export class PrismaErrorCatch implements ExceptionFilter {
         code: 'INTERNAL_ERROR',
         message: 'An unexpected error occurred',
       };
-      httpAdapter.reply(ctx.getResponse(), internalError, HttpStatus.INTERNAL_SERVER_ERROR);
+      httpAdapter.reply(
+        ctx.getResponse(),
+        internalError,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
       return;
     }
 

@@ -20,4 +20,3 @@ export function argentinaMonthRange(yearMonth: string) {
     end: new Date(Date.UTC(year, month, 1, 3)),
   };
 }
-

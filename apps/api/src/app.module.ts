@@ -13,18 +13,26 @@ import { IncomesModule } from './incomes/incomes.module';
 import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
 
 @Module({
-  imports: [ExpensesModule, PrismaModule, CategoriesModule, AccountsModule, MerchantsModule, IncomesModule, PaymentMethodsModule],
+  imports: [
+    ExpensesModule,
+    PrismaModule,
+    CategoriesModule,
+    AccountsModule,
+    MerchantsModule,
+    IncomesModule,
+    PaymentMethodsModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
-        {
+    {
       provide: APP_FILTER,
-      useClass: CatchEverythingFilter
+      useClass: CatchEverythingFilter,
     },
     {
       provide: APP_FILTER,
-      useClass: PrismaErrorCatch
-    }
+      useClass: PrismaErrorCatch,
+    },
   ],
 })
 export class AppModule {}

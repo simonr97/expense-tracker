@@ -17,10 +17,12 @@ import { toArgentinaDate } from '../../common/argentina-date';
 export class CreateExpenseDTO {
   @IsString()
   @IsNotEmpty()
-  @Transform(({value})=> typeof value === 'string' ? value.trim(): value)
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   description: string;
 
-  @IsNumber({maxDecimalPlaces:2})
+  @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
   @Max(99999999.99)
   amount: number;

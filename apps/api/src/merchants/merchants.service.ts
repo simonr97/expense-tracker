@@ -1,20 +1,20 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { CreateMerchantsDTO } from "./dto/create-merchants-dto";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateMerchantsDTO } from './dto/create-merchants-dto';
 
 @Injectable()
 export class MerchantsService {
-    constructor(private readonly prisma:PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-    async createMerchant(merchant: CreateMerchantsDTO){
-        const merchantCreation = this.prisma.merchant.create({
-            data:{...merchant},
-        })
-        return merchantCreation;
-    }
+  async createMerchant(merchant: CreateMerchantsDTO) {
+    const merchantCreation = this.prisma.merchant.create({
+      data: { ...merchant },
+    });
+    return merchantCreation;
+  }
 
-    async getMerchants(){
-        const merchants = this.prisma.merchant.findMany();
-        return merchants;
-    }
+  async getMerchants() {
+    const merchants = this.prisma.merchant.findMany();
+    return merchants;
+  }
 }
