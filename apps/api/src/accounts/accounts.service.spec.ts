@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountsService } from './accounts.service';
-import { beforeEach, describe, it } from 'node:test';
-import { expect } from '@playwright/test';
+import { PrismaService } from '../prisma/prisma.service';
 
 describe('AccountsService', () => {
   let service: AccountsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AccountsService],
+      // Empty Prisma stub: enough to build the module, no database.
+      providers: [AccountsService, { provide: PrismaService, useValue: {} }],
     }).compile();
 
     service = module.get<AccountsService>(AccountsService);
