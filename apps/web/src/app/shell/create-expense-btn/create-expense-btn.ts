@@ -1,8 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { IconRenderer } from '../../shared/icon-renderer/icon-renderer';
 import { Dialog } from "@angular/cdk/dialog";
-import { ExpenseForm } from '../../expenses/expense-form/expense-form';
-import { ExpensesForm } from '../../expenses/expenses.model';
+import { AddTransactionDialog } from '../add-transaction-dialog/add-transaction-dialog';
 
 @Component({
   selector: 'app-create-expense-btn',
@@ -14,6 +13,6 @@ export class CreateExpenseBtn {
   dialog = inject(Dialog)
 
   openExpenseForm(): void {
-    this.dialog.open<ExpensesForm>(ExpenseForm);
+    this.dialog.open(AddTransactionDialog, { ariaLabelledBy: 'add-transaction-title' });
   }
 }

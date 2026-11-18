@@ -1,0 +1,31 @@
+@if(expense(); as expense){
+  <app-side-panel [title]="'Expense Details'" (closed)="onSidePanelClose()" class="block h-full">
+    <app-expense-detail [expense]="expense"/>
+    <!-- Goes to SidePanel's fixed footer. Button values from the design system ("Botones"): secondary and destructive. -->
+    <div panelActions class="flex w-full gap-3">
+      <!-- TODO(simon): confirmation before deleting (US C.3.2) -->
+      <button
+        type="button"
+        (click)="onDeleteClicked()"
+        [disabled]="deletingExpense()"
+        class="flex h-10 flex-1 items-center justify-center gap-2 rounded-md border border-[#FECACA] bg-[#FFF5F5] px-4 text-sm font-medium text-danger transition-colors hover:bg-danger-soft focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-danger/20 disabled:cursor-default disabled:opacity-60 disabled:hover:bg-[#FFF5F5]"
+      >
+      @if(deletingExpense() === true) {
+        Deleting...
+      } @else{
+        <app-icon-renderer [iconName]="'trash-2'" [iconColor]="'currentColor'" [size]="16" />
+        Delete
+      }
+
+      </button>
+      <button
+        type="button"
+        (click)="onUpdateClicked()"
+        class="flex h-10 flex-1 items-center justify-center gap-2 rounded-md border border-border-medium bg-bg-surface px-4 text-sm font-medium text-text-primary transition-colors hover:border-primary-border hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12 disabled:cursor-default disabled:opacity-60 disabled:hover:border-border-medium disabled:hover:bg-bg-surface"
+      >
+        <app-icon-renderer [iconName]="'pencil'" [iconColor]="'currentColor'" [size]="16" />
+        Update
+      </button>
+    </div>
+  </app-side-panel>
+}

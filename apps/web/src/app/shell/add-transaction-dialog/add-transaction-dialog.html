@@ -1,0 +1,70 @@
+<!-- The CDK dialog container already has role="dialog"; its label points to the title via ariaLabelledBy -->
+<div class="flex w-[min(880px,calc(100vw-2rem))] flex-col gap-5 rounded-xl bg-bg-surface p-6 text-sm shadow-lg">
+  <!-- Header -->
+  <header class="flex items-start gap-4">
+    <div
+      class="flex h-12 w-12 shrink-0 items-center justify-center rounded-md transition-colors duration-200"
+      [class.bg-primary-soft]="type() === 'expense'"
+      [class.text-primary]="type() === 'expense'"
+      [class.bg-success-soft]="type() === 'income'"
+      [class.text-success]="type() === 'income'"
+    >
+      <app-icon-renderer [iconName]="header().icon" [iconColor]="'currentColor'" [size]="24" />
+    </div>
+    <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+      <h2 id="add-transaction-title" class="text-xl font-semibold text-text-primary">{{ header().title }}</h2>
+      <p class="text-[13px] text-text-secondary">{{ header().subtitle }}</p>
+    </div>
+    <button
+      type="button"
+      aria-label="Close"
+      (click)="dialogRef.close()"
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border-light text-text-secondary transition-colors hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12"
+    >
+      <app-icon-renderer [iconName]="'x'" [iconColor]="'currentColor'" [size]="20" />
+    </button>
+  </header>
+  <!-- Header -->
+
+  <!-- Expense | Income switch: a styled radio group, so arrow keys move between the two options -->
+  @if(mode === 'create'){
+    <fieldset class="grid grid-cols-2 gap-1 rounded-lg border border-border-light bg-bg-surface-soft p-1">
+      <legend class="sr-only">Transaction type</legend>
+      @for (option of types; track option.value) {
+        @let isSelected = type() === option.value;
+        <label class="flex cursor-pointer">
+          <input
+            type="radio"
+            name="transaction-type"
+            class="peer sr-only"
+            [value]="option.value"
+            [checked]="isSelected"
+            (change)="type.set(option.value)"
+          />
+          <span
+            class="flex h-11 w-full items-center justify-center gap-2 rounded-md text-base font-semibold transition-colors duration-200 peer-focus-visible:ring-4 peer-focus-visible:ring-primary/12"
+            [class.bg-primary]="isSelected && option.value === 'expense'"
+            [class.bg-success]="isSelected && option.value === 'income'"
+            [class.text-white]="isSelected"
+            [class.shadow-sm]="isSelected"
+            [class.text-text-secondary]="!isSelected"
+            [class.hover:bg-bg-hover]="!isSelected"
+          >
+            <app-icon-renderer [iconName]="option.icon" [iconColor]="'currentColor'" [size]="20" />
+            {{ option.label }}
+          </span>
+        </label>
+      }
+    </fieldset>
+  }
+  <!-- Expense | Income switch -->
+
+  @switch (type()) {
+    @case ('expense') {
+      <app-expense-form [expenseToUpdate]="data"/>
+    }
+    @case ('income') {
+      <app-income-quick-create />
+    }
+  }
+</div>

@@ -1,11 +1,14 @@
-export interface ExpensesForm {
+export interface ExpenseFormModel {
   description: string;
   amount: number;
   categoryId: string;
   accountId: string;
   merchantId: string;
+  paymentMethodId: string;
   notes: string;
   status: 'Completed' | 'Pending';
+  currency: 'ARS' | 'USD';
+  date:string;
 }
 
 export interface ExpenseCategory {
@@ -19,13 +22,16 @@ export interface ExpensesAccount {
 export interface ExpensesMerchant {
   name: string;
 }
+export interface ExpensePaymentMethod {
+  name: string;
+}
 
 export interface Expense {
   id: string;
   description: string;
   amount: string;
   notes: string;
-  status: string;
+  status: 'Completed' | 'Pending';
   date: string;
   createdAt: string;
   updatedAt: string;
@@ -35,6 +41,9 @@ export interface Expense {
   accountId: string;
   merchant: ExpensesMerchant;
   merchantId: string;
+  paymentMethod: ExpensePaymentMethod;
+  paymentMethodId: string;
+  currency: 'ARS' | 'USD';
 }
 
 export interface ExpenseDateRange {
@@ -53,4 +62,17 @@ export interface ErrorMessage {
     field?: string;
     errors?: string[];
   };
+}
+
+export interface ExpensePreview {
+  description: string;
+  amount: number;
+  notes: string;
+  status: string;
+  date: string;
+  category: ExpenseCategory | undefined;
+  account: string | undefined;
+  merchant: string | undefined;
+  paymentMethod: string | undefined;
+  currency: 'ARS' | 'USD';
 }

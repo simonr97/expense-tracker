@@ -1,8 +1,14 @@
 
+<!-- The modal surface and header live in AddTransactionDialog; this is only the expense content. -->
+<div class="flex flex-col gap-5">
+<div class="grid grid-cols-1 gap-5 md:grid-cols-2">
 <form
-  (submit)="onSubmitNewExpense($event)"
-  class="flex w-80 flex-col gap-4 rounded-lg border border-border-light bg-bg-surface p-5 text-sm shadow-sm"
+  id="expense-form"
+  (submit)="onSubmitExpense($event)"
+  class="flex min-w-0 flex-col gap-4"
 >
+
+  <!-- Expense Name -->
   <label class="flex flex-col gap-1.5">
     <span class="text-[13px] text-text-secondary">Expense Name</span>
     <input
@@ -11,6 +17,9 @@
       class="h-10 rounded-md border border-border-medium bg-bg-surface px-3 text-sm text-text-primary focus:border-primary focus:ring-4 focus:ring-primary/12 focus:outline-none"
     />
   </label>
+  <!-- Expense Name -->
+
+  <!-- Expense Amount -->
   <label class="flex flex-col gap-1.5">
     <span class="text-[13px] text-text-secondary">Expense Amount</span>
     <input
@@ -20,25 +29,57 @@
       class="h-10 rounded-md border border-border-medium bg-bg-surface px-3 text-sm text-text-primary focus:border-primary focus:ring-4 focus:ring-primary/12 focus:outline-none"
     />
   </label>
+  <!-- Expense Amount -->
 
-  <div class="flex flex-col gap-2 border-t border-border-light pt-3">
-    <button
-      type="button"
-      (click)="openNewMerchantForm.update(v=>!v)"
-      class="self-start text-sm font-medium text-primary hover:text-primary-hover hover:underline"
+  <!-- Expense Currency -->
+  <label class="flex flex-col gap-1.5">
+    <span class="text-[13px] text-text-secondary">Expense Currency</span>
+    <select
+      [formField]="expenseForm.currency"
+      class="h-10 rounded-md border border-border-medium bg-bg-surface px-3 text-sm text-text-primary focus:border-primary focus:ring-4 focus:ring-primary/12 focus:outline-none"
     >
-      Create New Merchant
-    </button>
-    @if(openNewMerchantForm()) {
-       <app-quick-create-form label="Merchant" [saveNew]="createMerchant" (created)="handleNewMerchantCreation($event)"/>
-    }
-    <label class="flex flex-col gap-1.5">
-      <span class="text-[13px] text-text-secondary">Expense Merchants</span>
+      <option value="" disabled hidden>Select a Currency</option>
+      @for(currency of currencys; track currency)
+      {
+        <option [value]="currency">
+          {{currency}}
+        </option>
+      }
+    </select>
+  </label>
+  <!-- Expense Currency -->
+
+   <!-- Expense Date -->
+  <label class="flex flex-col gap-1.5">
+    <span class="text-[13px] text-text-secondary">Expense Date</span>
+    <input
+      type="date"
+      [formField]="expenseForm.date"
+      class="h-10 rounded-md border border-border-medium bg-bg-surface px-3 text-sm text-text-primary focus:border-primary focus:ring-4 focus:ring-primary/12 focus:outline-none"
+    />
+  </label>
+  <!-- Expense Date -->
+
+  <!-- Expense Merchant -->
+  <div class="flex flex-col gap-1.5">
+    <div class="flex items-center justify-between gap-2">
+      <label for="expense-merchant" class="text-[13px] text-text-secondary">Expense Merchants</label>
+      <button
+        type="button"
+        [attr.aria-pressed]="openCreationForm() === 'merchant'"
+        (click)="openCreationForm() === 'merchant' ? openCreationForm.set('preview') : openCreationForm.set('merchant')"
+        class="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary-selected focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12"
+      >
+        <app-icon-renderer [iconName]="'plus'" [iconColor]="'currentColor'" [size]="14" />
+        Create Merchant
+      </button>
+    </div>
       <select
+        id="expense-merchant"
         [formField]="expenseForm.merchantId"
         class="h-10 rounded-md border border-border-medium bg-bg-surface px-3 text-sm text-text-primary focus:border-primary focus:ring-4 focus:ring-primary/12 focus:outline-none"
       >
-        <option value="">Select a Merchant</option>
+        <option value="" disabled hidden>Select a Merchant</option>
         @for(merchant of merchants.value(); track merchant.id)
         {
           <option [value]="merchant.id">
@@ -46,27 +87,29 @@
           </option>
         }
       </select>
-    </label>
   </div>
+  <!-- Expense Merchant -->
 
-  <div class="flex flex-col gap-2 border-t border-border-light pt-3">
-    <button
-      type="button"
-      (click)="openNewAccountForm.update(v=>!v)"
-      class="self-start text-sm font-medium text-primary hover:text-primary-hover hover:underline"
-    >
-      Create New Account
-    </button>
-    @if(openNewAccountForm()) {
-       <app-quick-create-form label="Account" [saveNew]="createAccount" (created)="handleNewAccountCreation($event)"/>
-    }
-    <label class="flex flex-col gap-1.5">
-      <span class="text-[13px] text-text-secondary">Expense Account</span>
+  <!-- Expense Account -->
+  <div class="flex flex-col gap-1.5">
+    <div class="flex items-center justify-between gap-2">
+      <label for="expense-account" class="text-[13px] text-text-secondary">Expense Account</label>
+      <button
+        type="button"
+        [attr.aria-pressed]="openCreationForm() === 'account'"
+        (click)="openCreationForm() === 'account' ? openCreationForm.set('preview') : openCreationForm.set('account')"
+        class="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary-selected focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12"
+      >
+        <app-icon-renderer [iconName]="'plus'" [iconColor]="'currentColor'" [size]="14" />
+        Create Account
+      </button>
+    </div>
       <select
+        id="expense-account"
         [formField]="expenseForm.accountId"
         class="h-10 rounded-md border border-border-medium bg-bg-surface px-3 text-sm text-text-primary focus:border-primary focus:ring-4 focus:ring-primary/12 focus:outline-none"
       >
-        <option value="">Select an Account</option>
+        <option value="" disabled hidden>Select an Account</option>
         @for(account of accounts.value(); track account.id)
         {
           <option [value]="account.id">
@@ -74,52 +117,151 @@
           </option>
         }
       </select>
-    </label>
   </div>
+  <!-- Expense Account -->
 
-  <div class="flex flex-col gap-2 border-t border-border-light pt-3">
-    <button
-      type="button"
-      (click)="openNewCategoryForm.update(v=>!v)"
-      class="self-start text-sm font-medium text-primary hover:text-primary-hover hover:underline"
-    >
-      Create New Category
-    </button>
-    @if(openNewCategoryForm()) {
-      <app-category-quick-create (createdCategory)="openNewCategoryForm.set(false)" />
-    }
-    <label class="flex flex-col gap-1.5">
-      <span class="text-[13px] text-text-secondary">Expense Category</span>
+  <!-- Expense PaymentMethod -->
+  <div class="flex flex-col gap-1.5">
+    <div class="flex items-center justify-between gap-2">
+      <label for="expense-payment-method" class="text-[13px] text-text-secondary">Expense Payment Method</label>
+      <button
+        type="button"
+        [attr.aria-pressed]="openCreationForm() === 'payment'"
+        (click)="openCreationForm() === 'payment' ? openCreationForm.set('preview') : openCreationForm.set('payment')"
+        class="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary-selected focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12"
+      >
+        <app-icon-renderer [iconName]="'plus'" [iconColor]="'currentColor'" [size]="14" />
+        Create Payment Method
+      </button>
+    </div>
       <select
-        [formField]="expenseForm.categoryId"
+        id="expense-payment-method"
+        [formField]="expenseForm.paymentMethodId"
         class="h-10 rounded-md border border-border-medium bg-bg-surface px-3 text-sm text-text-primary focus:border-primary focus:ring-4 focus:ring-primary/12 focus:outline-none"
       >
-        <option value="">Select a Category</option>
-        @for(category of categories.value(); track category.id)
+        <option value="" disabled hidden>Select a Payment Method</option>
+        @for(paymentMethod of paymentMethods.value(); track paymentMethod.id)
         {
-          <option [value]="category.id">
-            {{category.name}}
+          <option [value]="paymentMethod.id">
+            {{paymentMethod.name}}
           </option>
         }
       </select>
-    </label>
   </div>
+  <!-- Expense PaymentMethod -->
 
+  <!-- Expense Category -->
+  <div class="flex flex-col gap-1.5">
+    <div class="flex items-center justify-between gap-2">
+      <span id="expense-category-label" class="text-[13px] text-text-secondary">Expense Category</span>
+      <button
+        type="button"
+        [attr.aria-pressed]="openCreationForm() === 'category'"
+        (click)="openCreationForm() === 'category' ? openCreationForm.set('preview') : openCreationForm.set('category')"
+        class="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary-selected focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12"
+      >
+        <app-icon-renderer [iconName]="'plus'" [iconColor]="'currentColor'" [size]="14" />
+        Create Category
+      </button>
+    </div>
+    <app-category-select
+      [formField]="expenseForm.categoryId"
+      [categories]="categories.value() ?? []"
+      labelledBy="expense-category-label"
+    />
+  </div>
+  <!-- Expense Category -->
+
+  <!-- Expense Notes -->
+  <label class="flex flex-col gap-1.5 border-t border-border-light pt-3">
+    <span class="flex items-center justify-between text-[13px] text-text-secondary">
+      Notes
+      <span class="text-xs text-text-tertiary">{{ expenseFormModel().notes.length }}/{{ notesMaxLength }}</span>
+    </span>
+    <textarea
+      rows="3"
+      placeholder="Add a note (optional)"
+      [formField]="expenseForm.notes"
+      class="resize-y rounded-md border border-border-medium bg-bg-surface px-3 py-2 text-sm text-text-primary placeholder:text-text-tertiary focus:border-primary focus:ring-4 focus:ring-primary/12 focus:outline-none"
+    ></textarea>
+  </label>
+  <!-- Expense Notes -->
+
+  @if(errorMessage()?.statusCode === 400){
+    <div role="alert">
+      <span>There has been an error creating or updating your expense</span>
+    </div>
+  }
+</form>
+
+<!-- Right column. Outside the <form> so the create panels don't end up as nested forms. -->
+<aside class="flex min-w-0 flex-col">
+  @switch(openCreationForm()) {
+    @case('account'){
+      <app-quick-create-form
+        label="Account"
+        subtitle="Add a new account to track where your money is."
+        info="Accounts are where the money comes out of (e.g., BBVA Card, Mercado Pago, Savings)."
+        [saveNew]="createAccount"
+        (created)="handleNewAccountCreation($event)"
+        (closed)="onQuickCreateClosed()"
+      />
+    }
+    @case('payment'){
+      <app-quick-create-form
+        label="Payment Method"
+        subtitle="Add a new way to pay for your expenses."
+        info="Payment methods describe how you paid (e.g., Debit, Credit, Transfer, Cash)."
+        [saveNew]="createPaymentMethod"
+        (created)="handleNewPaymentMethodCreation($event)"
+        (closed)="onQuickCreateClosed()"
+      />
+    }
+    @case('merchant'){
+      <app-quick-create-form
+        label="Merchant"
+        subtitle="Add who you paid for this expense."
+        info="Merchants can be a store, a service or a person (e.g., Carrefour, Netflix, a friend)."
+        [saveNew]="createMerchant"
+        (created)="handleNewMerchantCreation($event)"
+        (closed)="onQuickCreateClosed()"
+      />
+    }
+    @case('category'){
+       <app-category-quick-create (closed)="onQuickCreateClosed()" (createdCategory)="handleNewCategoryCreation($event)" />
+    }
+    @case('preview'){
+      <app-expense-preview-card [formData]="previewData()"/>
+    }
+  }
+</aside>
+</div>
+
+<footer class="flex justify-end gap-3 border-t border-border-light pt-4">
+  <button
+    type="button"
+    (click)="dialogRef.close()"
+    class="h-11 rounded-md border border-border-medium bg-bg-surface px-4 text-sm font-semibold text-text-primary transition-colors hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12"
+  >
+    Cancel
+  </button>
+  <!-- form="expense-form" ties the button to the form even though it sits outside it -->
   <button
     type="submit"
+    form="expense-form"
     [disabled]="savingExpense()"
     [attr.aria-busy]="savingExpense()"
     class="h-11 rounded-md bg-primary px-4 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(10,132,255,0.22)] hover:bg-primary-hover disabled:cursor-default disabled:opacity-60 disabled:hover:bg-primary"
   >
-  @if(savingExpense()){
-    Saving...
-  } @else{
-    Create Expense
-  }
+    @if(savingExpense()){
+      Saving...
+    } @else{
+      @if(expenseToUpdate()){
+        Update Expense
+      } @else{
+        Save Expense
+      }
+    }
   </button>
-@if(errorMessage().statusCode === 400){
-<div role="alert">
-  <span>There has been an error creating your expense</span>
+</footer>
 </div>
-}
-</form>

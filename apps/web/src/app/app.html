@@ -1,8 +1,24 @@
-<div class="flex min-h-screen gap-4 p-4">
-  <app-sidebar class="sticky top-4 h-[calc(100vh-2rem)] shrink-0" />
-  <main class="flex min-w-0 flex-1 flex-col gap-4">
-    <app-topbar />
-    <app-expenses-grid />
-    <router-outlet />
+<!-- Shell (design system: "Layout de tres columnas"): fits the viewport with no page scroll; only the grid and
+     panels scroll inside. Below min-h (provisional 720px) the page scrolls instead of squeezing the content.
+
+     Columns: sidebar | content | Expense Detail. The third column is 0 while the panel host is empty (the @if is
+     false) and opens to 25rem when it has content, with :has() instead of a signal in App. Same number of tracks in
+     both states, so grid-template-columns animates; no animation with prefers-reduced-motion.
+     No column gap (an empty 0 track would still add one): the sidebar has mr-4 and the panel pl-4 instead.
+
+     Rows: topbar | content. The topbar spans the content and panel columns; the panel starts under it. -->
+<div
+  class="grid h-dvh min-h-180 grid-cols-[auto_minmax(0,1fr)_0rem] grid-rows-[auto_minmax(0,1fr)] gap-y-4 overflow-hidden p-4 transition-[grid-template-columns] duration-250 ease-out motion-reduce:transition-none has-[>app-expense-detail-panel:not(:empty)]:grid-cols-[auto_minmax(0,1fr)_25rem]"
+>
+  <app-sidebar class="row-span-2 mr-4 min-h-0" />
+  <app-topbar class="col-span-2" />
+  <main class="flex min-h-0 min-w-0 flex-col gap-4">
+    <app-expenses-grid class="min-h-0 flex-1" />
+    <!-- hidden: the empty outlet would still take a gap-4 below the grid. Routed components render as its siblings. -->
+    <router-outlet class="hidden" />
   </main>
+  <!-- TODO(simon): import ExpenseDetailPanel in app.ts -->
+  <!-- Fixed width (w-100 = 25rem, pl-4 included) so the card isn't squeezed while the column animates; the part
+       outside the column is clipped by the shell's overflow-hidden. -->
+  <app-expense-detail-panel class="w-100 min-h-0 pl-4" />
 </div>

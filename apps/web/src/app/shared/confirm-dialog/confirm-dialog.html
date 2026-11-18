@@ -1,0 +1,69 @@
+<!-- Opened with the CDK Dialog (role="alertdialog"); ariaLabelledBy → title, ariaDescribedBy → message -->
+<div class="flex w-[min(520px,calc(100vw-2rem))] flex-col gap-6 rounded-xl bg-bg-surface p-6 text-sm shadow-lg">
+  <header class="flex items-start gap-4">
+    @switch(mode){
+      @case('update'){
+        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-primary-soft text-primary" aria-hidden="true">
+          <app-icon-renderer [iconName]="header().icon" [iconColor]="'currentColor'" [size]="28" />
+        </div>
+      }
+      @case('delete'){
+        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-danger-soft text-danger" aria-hidden="true">
+          <app-icon-renderer [iconName]="header().icon" [iconColor]="'currentColor'" [size]="28" />
+        </div>
+      }
+    }
+
+    <div class="flex min-w-0 flex-1 flex-col gap-1.5 pt-1">
+      <h2 id="confirm-dialog-title" class="text-xl font-semibold text-text-primary">{{header().title}}</h2>
+      <div id="confirm-dialog-message" class="flex flex-col gap-0.5 text-sm text-text-secondary">
+        <p class="wrap-break-word">{{header().subtitle}}</p>
+        @if(mode === 'delete'){
+          <p>This action cannot be undone.</p>
+        }
+      </div>
+    </div>
+
+    <button
+      type="button"
+      aria-label="Close"
+      (click)="onCancel()"
+      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-hover hover:text-text-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12"
+    >
+      <app-icon-renderer [iconName]="'x'" [iconColor]="'currentColor'" [size]="20" />
+    </button>
+  </header>
+
+  <footer class="flex justify-end gap-3">
+    <button
+      type="button"
+      data-confirm-cancel
+      (click)="onCancel()"
+      class="h-11 rounded-md border border-border-medium bg-bg-surface px-5 text-sm font-semibold text-text-primary transition-colors hover:border-primary-border hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12"
+    >
+      Cancel
+    </button>
+    @switch(mode){
+      @case('update'){
+        <button
+          type="button"
+          (click)="onConfirm()"
+          class="flex h-11 items-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
+        >
+          <app-icon-renderer [iconName]="header().icon" [iconColor]="'currentColor'" [size]="18" />
+          {{header().title}}
+        </button>
+      }
+      @case('delete'){
+        <button
+          type="button"
+          (click)="onConfirm()"
+          class="flex h-11 items-center gap-2 rounded-md bg-[#DC2626] px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-danger/20"
+        >
+          <app-icon-renderer [iconName]="header().icon" [iconColor]="'currentColor'" [size]="18" />
+          {{header().title}}
+        </button>
+      }
+    }
+  </footer>
+</div>

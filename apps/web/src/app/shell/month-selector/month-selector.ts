@@ -1,4 +1,4 @@
-import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
+import { Component, computed, effect, inject, linkedSignal, model, signal } from '@angular/core';
 import { ExpensesService } from '../../expenses/expenses';
 import { IconRenderer } from '../../shared/icon-renderer/icon-renderer';
 import { MonthOption } from '../shell.model';
@@ -22,6 +22,8 @@ export class MonthSelector {
   dateRange = this.expensesService.getDateRange;
 
   isOpen = signal(false);
+
+  yearMonth = model<string | undefined>(undefined);
 
   formattedMaxDate = computed(() => {
   const max = this.dateRange.value()?.max;
@@ -60,7 +62,7 @@ export class MonthSelector {
   monthOptions = computed(()=>{
     const dates = this.allDates()
     if(!dates?.length) return [];
-    return [...dates].reverse().map(date => ({ date, label: monthFormatter.format(date) }))
+    return [...dates].reverse().map(date => ({ date, label: monthFormatter.format(date), yearMonth: this.createYearMonth(date) }))
   })
 
   // Keeps the user's month if it still exists after a reload; otherwise falls back to the most recent one.
@@ -109,4 +111,16 @@ export class MonthSelector {
   isLatestMonth = computed(()=>{
     return this.calculateSelectedMonthIndex() === 0;
   })
+
+  createYearMonth(date:Date) {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`
+  }
+
+  constructor() {
+    effect(()=>{
+      this.yearMonth.set(this.selectedMonth()?.yearMonth)
+    })
+  }
 }

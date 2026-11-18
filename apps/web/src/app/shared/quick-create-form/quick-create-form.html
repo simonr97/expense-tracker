@@ -1,6 +1,22 @@
 <form (submit)="onSubmitForm($event)" class="flex w-full flex-col gap-3 rounded-md bg-bg-surface-soft p-4 text-sm">
+  <!-- Header (no back arrow: Cancel is the way back). Same classes as CategoryQuickCreate. -->
+  <header>
+    <h2 class="text-base font-semibold text-text-primary">Create {{ label() }}</h2>
+    @if (subtitle()) {
+      <p class="text-[13px] text-text-secondary">{{ subtitle() }}</p>
+    }
+  </header>
+
+  @if (info()) {
+    <!-- Callout (design system); inline until the shared Callout component exists -->
+    <div class="flex gap-2.5 rounded-md bg-primary-soft p-3 text-[13px] text-text-secondary">
+      <app-icon-renderer class="flex shrink-0 pt-0.5 text-primary" [iconName]="'info'" [iconColor]="'currentColor'" [size]="16" />
+      <p>{{ info() }}</p>
+    </div>
+  }
+
   <label class="flex flex-col gap-1.5">
-    <span class="text-[13px] text-text-secondary">{{label()}}</span>
+    <span class="text-[13px] text-text-secondary">{{label()}} Name</span>
     <input
       #nameInput
       type="text"
@@ -8,10 +24,30 @@
       class="h-10 rounded-md border border-border-medium bg-bg-surface px-3 text-sm text-text-primary focus:border-primary focus:ring-4 focus:ring-primary/12 focus:outline-none"
     />
   </label>
-  <button
-    type="submit"
-    class="h-11 rounded-md bg-primary px-4 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(10,132,255,0.22)] hover:bg-primary-hover"
-  >
-    Create
-  </button>
+  <div class="flex gap-3">
+    <button
+      type="button"
+      (click)="onClosed()"
+      class="h-11 rounded-md border border-border-medium bg-bg-surface px-4 text-sm font-semibold text-text-primary transition-colors hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/12"
+    >
+      Cancel
+    </button>
+    <button
+      type="submit"
+      [disabled]="savingField()"
+      [attr.aria-busy]="savingField()"
+      class="h-11 flex-1 rounded-md bg-primary px-4 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(10,132,255,0.22)] hover:bg-primary-hover"
+    >
+      @if(savingField()) {
+        Saving...
+      } @else {
+        Create {{label()}}
+      }
+    </button>
+  </div>
+    @if(errorMessage()?.statusCode === 400){
+    <div role="alert">
+      <span>There has been an error creating your {{label()}}</span>
+    </div>
+  }
 </form>

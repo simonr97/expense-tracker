@@ -7,19 +7,40 @@ import {
   IsPositive,
   IsString,
   IsUUID,
+  Max,
 } from 'class-validator';
 
-import { ExpenseStatus } from '../../../generated/prisma/enums';
-import { Type } from 'class-transformer';
+import { Currency, ExpenseStatus } from '../../../generated/prisma/enums';
+import { Transform } from 'class-transformer';
+import { toArgentinaDate } from '../../common/argentina-date';
 
 export class CreateExpenseDTO {
   @IsString()
   @IsNotEmpty()
+  @Transform(({value})=> typeof value === 'string' ? value.trim(): value)
   description: string;
 
-  @IsNumber()
+  @IsNumber({maxDecimalPlaces:2})
   @IsPositive()
+  @Max(99999999.99)
   amount: number;
+
+  @IsOptional()
+  @IsString()
+  notes: string | undefined;
+
+  @IsEnum(ExpenseStatus)
+  @IsOptional()
+  status: ExpenseStatus;
+
+  @IsEnum(Currency)
+  @IsNotEmpty()
+  currency: Currency;
+
+  @IsDate()
+  @Transform(({ value }) => toArgentinaDate(value))
+  @IsOptional()
+  date: Date;
 
   @IsUUID('all')
   @IsNotEmpty()
@@ -33,16 +54,7 @@ export class CreateExpenseDTO {
   @IsNotEmpty()
   merchantId: string;
 
-  @IsOptional()
-  @IsString()
-  notes: string | undefined;
-
-  @IsEnum(ExpenseStatus)
-  @IsOptional()
-  status: ExpenseStatus;
-
-  @IsDate()
-  @Type(() => Date)
-  @IsOptional()
-  date: Date;
+  @IsUUID('all')
+  @IsNotEmpty()
+  paymentMethodId: string;
 }

@@ -1,4 +1,4 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { sidebarOptionsFormatted } from './sidebar.constants';
 import { IconRenderer } from '../../shared/icon-renderer/icon-renderer';
 

@@ -1,0 +1,41 @@
+<fieldset class="flex flex-col gap-2">
+  <legend class="mb-2 text-[13px] text-text-secondary">
+    {{ label() }}
+    @if (required()) {
+      <span class="text-danger" aria-hidden="true">*</span>
+    }
+  </legend>
+
+  <div class="grid grid-cols-5 gap-2">
+    @for (icon of icons(); track icon) {
+      @let isSelected = value() === icon;
+      @let tones = accentTones();
+      <label class="flex cursor-pointer">
+        <input
+          type="radio"
+          class="peer sr-only"
+          [name]="groupName"
+          [value]="icon"
+          [checked]="isSelected"
+          [attr.aria-label]="readableName(icon)"
+          (change)="value.set(icon)"
+        />
+        <span
+          class="flex aspect-square w-full items-center justify-center rounded-md border transition-colors duration-200 peer-focus-visible:ring-4 peer-focus-visible:ring-primary/12"
+          [class.border-border-light]="!isSelected"
+          [class.text-text-secondary]="!isSelected"
+          [class.hover:bg-bg-hover]="!isSelected"
+          [class.border-2]="isSelected"
+          [class.bg-primary-soft]="isSelected && !tones"
+          [class.border-primary]="isSelected && !tones"
+          [class.text-primary]="isSelected && !tones"
+          [style.background-color]="isSelected ? tones?.background : null"
+          [style.border-color]="isSelected ? tones?.border : null"
+          [style.color]="isSelected ? tones?.foreground : null"
+        >
+          <app-icon-renderer [iconName]="icon" [iconColor]="'currentColor'" [size]="20" />
+        </span>
+      </label>
+    }
+  </div>
+</fieldset>

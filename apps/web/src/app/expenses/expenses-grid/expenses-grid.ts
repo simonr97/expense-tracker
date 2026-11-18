@@ -1,11 +1,13 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { ExpensesService } from '../expenses';
-import { ClientSideRowModelModule, ColDef, ModuleRegistry, RowSelectionModule, RowSelectionOptions, themeQuartz, SelectionChangedEvent, GetRowIdParams  } from 'ag-grid-community';
+import { ClientSideRowModelModule, ColDef, ModuleRegistry, RowSelectionModule, RowSelectionOptions, themeQuartz, SelectionChangedEvent, GetRowIdParams, GridApi, GridReadyEvent, CellStyleModule  } from 'ag-grid-community';
 import { AgGridAngular } from 'ag-grid-angular';
 import { CategoryBadgeCellRenderer } from './category-badge-cell-renderer/category-badge-cell-renderer';
 import { Expense } from '../expenses.model';
+import { StatusBadgeCellRenderer } from './status-badge-cell-renderer/status-badge-cell-renderer';
+import { formatAmount, formatDate } from '../../shared/field-formatter';
 
-ModuleRegistry.registerModules([ClientSideRowModelModule,RowSelectionModule]);
+ModuleRegistry.registerModules([ClientSideRowModelModule,RowSelectionModule,CellStyleModule]);
 
 const gastoProGridTheme = themeQuartz.withParams({
   backgroundColor: '#FFFFFF',
@@ -30,24 +32,54 @@ const gastoProGridTheme = themeQuartz.withParams({
 })
 export class ExpensesGrid {
   private readonly expensesService = inject(ExpensesService);
+  private readonly gridApi = signal<GridApi | undefined>(undefined);
 
-  expenses = this.expensesService.getExpenses;
+  onGridReady(event: GridReadyEvent) {
+    this.gridApi.set(event.api);
+  }
+
+  expensesByYearMonth = this.expensesService.getExpensesByYearMonth;
+  expensesOfMonth = this.expensesService.expensesOfMonth;
 
   protected readonly gridTheme = gastoProGridTheme;
 
   rowId = (params: GetRowIdParams<Expense>) => params.data.id
 
-  columnDefs: ColDef[] = [
+  columnDefs: ColDef<Expense>[] = [
     {field: 'description'},
-    {field: 'amount'},
-    {field: 'date'},
+    {
+      field: 'amount',
+      valueGetter: (p)=>p.data? Number(p.data.amount): null,
+      valueFormatter: (p)=>p.data? formatAmount(p.data.amount,p.data.currency) : '',
+    },
+    {
+      field: 'date',
+      valueFormatter: (p)=>p.value? formatDate(p.value) : '',
+    },
     {field: 'notes'},
-    {field: 'status'},
+    {
+      field: 'status',
+      cellRenderer: StatusBadgeCellRenderer,
+    },
     {field: 'account.name', headerName: 'Account'},
-    {field: 'category', headerName: 'Category', cellRenderer: CategoryBadgeCellRenderer },
-    {field: 'merchant.name', headerName: 'Merchant'}
+    {
+      field: 'category',
+      valueFormatter: (p)=>p.value?.name ?? '',
+      headerName: 'Category',
+      cellRenderer: CategoryBadgeCellRenderer,
+    },
+    {
+      field: 'merchant.name',
+      headerName: 'Merchant',
+    },
+    {
+      field: 'paymentMethod.name',
+      headerName: 'Payment Method',
+    },
   ];
 
+  // Relative widths that fill the card; below minWidth the grid scrolls horizontally instead of squeezing columns.
+  defaultColDef: ColDef = { flex: 1, minWidth: 120 };
 
   rowSelection: RowSelectionOptions = {
     mode: "singleRow",
@@ -57,12 +89,13 @@ export class ExpensesGrid {
   onSelectionChanged(event: SelectionChangedEvent) {
     const [selectedRow] = event.api.getSelectedRows();
     this.expensesService.modifySelectedRowId(selectedRow?.id);
-    console.log(this.expensesService.selectExpense(),this.expensesService._selectedId())
   }
 
-  // constructor(){
-  //   effect(()=>{
-  //         console.log(this.expenses.value())
-  //   })
-  // }
+  constructor(){
+    effect(()=>{
+      const api = this.gridApi();
+      const id = this.expensesService.selectedId();
+      if(api && !id) api.deselectAll();
+    })
+  }
 }

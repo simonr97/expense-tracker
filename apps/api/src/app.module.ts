@@ -9,9 +9,11 @@ import { MerchantsModule } from './merchants/merchants.module';
 import { PrismaErrorCatch } from './exception-filter/prisma-error-catch';
 import { APP_FILTER } from '@nestjs/core';
 import { CatchEverythingFilter } from './exception-filter/http-error-catch';
+import { IncomesModule } from './incomes/incomes.module';
+import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
 
 @Module({
-  imports: [ExpensesModule, PrismaModule, CategoriesModule, AccountsModule, MerchantsModule],
+  imports: [ExpensesModule, PrismaModule, CategoriesModule, AccountsModule, MerchantsModule, IncomesModule, PaymentMethodsModule],
   controllers: [AppController],
   providers: [
     AppService,

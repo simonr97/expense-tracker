@@ -1,0 +1,50 @@
+<fieldset class="flex flex-col gap-2">
+  <legend class="mb-2 text-[13px] text-text-secondary">
+    {{ label() }}
+    @if (required()) {
+      <span class="text-danger" aria-hidden="true">*</span>
+    }
+  </legend>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="flex flex-wrap items-center gap-2.5">
+      @for (color of colors(); track color) {
+        @let isSelected = value() === color;
+        <label class="flex cursor-pointer">
+          <input
+            type="radio"
+            class="peer sr-only"
+            [name]="groupName"
+            [value]="color"
+            [checked]="isSelected"
+            [attr.aria-label]="color"
+            (change)="value.set(color)"
+          />
+          <span
+            class="flex h-7 w-7 items-center justify-center rounded-full text-white ring-offset-2 transition-shadow duration-200 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 peer-focus-visible:outline-primary"
+            [class.ring-2]="isSelected"
+            [class.ring-text-primary]="isSelected"
+            [style.background-color]="color"
+          >
+            @if (isSelected) {
+              <app-icon-renderer [iconName]="'check'" [iconColor]="'currentColor'" [size]="16" />
+            }
+          </span>
+        </label>
+      }
+    </div>
+
+    <!-- Read-only for now: custom hex is out of Alpha 1.0 -->
+    <output
+      class="flex h-10 items-center gap-2 rounded-md border border-border-medium bg-bg-surface px-3 text-sm text-text-primary"
+      aria-label="Selected color"
+    >
+      @if (value()) {
+        <span class="h-4 w-4 rounded-sm" [style.background-color]="value()"></span>
+        {{ value() }}
+      } @else {
+        <span class="text-text-tertiary">—</span>
+      }
+    </output>
+  </div>
+</fieldset>

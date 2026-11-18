@@ -1,0 +1,70 @@
+<section class="flex flex-col gap-4 rounded-md bg-bg-surface-soft p-4" aria-labelledby="expense-preview-title">
+  <header>
+    <h2 id="expense-preview-title" class="text-base font-semibold text-text-primary">Expense Preview</h2>
+    <p class="text-[13px] text-text-secondary">See how your expense will be recorded.</p>
+  </header>
+
+  <div class="flex flex-col gap-4 rounded-md bg-bg-surface p-4">
+    <div class="flex items-center gap-4">
+      <app-category-avatar [category]="formData().category" size="lg" />
+      <div class="flex min-w-0 flex-col gap-1">
+        @if (formData().description) {
+          <p class="truncate text-base font-semibold text-text-primary">{{ formData().description }}</p>
+        } @else {
+          <p class="text-base font-semibold text-text-tertiary">—</p>
+        }
+        @if (amount(); as amount) {
+          <p class="truncate text-[24px] font-semibold leading-tight text-text-primary">{{ amount }}</p>
+        } @else {
+          <p class="text-[24px] font-semibold leading-tight text-text-tertiary">—</p>
+        }
+      </div>
+    </div>
+
+    <dl class="flex flex-col divide-y divide-border-light border-t border-border-light">
+      @for (row of rows(); track row.label) {
+        <div class="flex items-center gap-3 py-2.5">
+          <app-icon-renderer class="flex shrink-0 text-text-tertiary" [iconName]="row.icon" [iconColor]="'currentColor'" [size]="16" />
+          <dt class="w-32 shrink-0 text-[13px] text-text-secondary">{{ row.label }}</dt>
+          @if (row.value) {
+            <dd class="min-w-0 truncate text-sm text-text-primary">{{ row.value }}</dd>
+          } @else {
+            <dd class="text-sm text-text-tertiary">—</dd>
+          }
+        </div>
+      }
+
+      <div class="flex items-center gap-3 py-2.5">
+        <app-icon-renderer class="flex shrink-0 text-text-tertiary" [iconName]="'tag'" [iconColor]="'currentColor'" [size]="16" />
+        <dt class="w-32 shrink-0 text-[13px] text-text-secondary">Category</dt>
+        @if (formData().category; as category) {
+          <dd class="min-w-0"><app-category-badge [category]="category" /></dd>
+        } @else {
+          <dd class="text-sm text-text-tertiary">—</dd>
+        }
+      </div>
+
+      <div class="flex items-start gap-3 py-2.5">
+        <app-icon-renderer class="flex shrink-0 text-text-tertiary" [iconName]="'file-text'" [iconColor]="'currentColor'" [size]="16" />
+        <dt class="w-32 shrink-0 text-[13px] text-text-secondary">Notes</dt>
+        @if (formData().notes) {
+          <dd class="min-w-0 whitespace-pre-line wrap-break-word text-sm text-text-primary">{{ formData().notes }}</dd>
+        } @else {
+          <dd class="text-sm text-text-tertiary">—</dd>
+        }
+      </div>
+    </dl>
+
+    @if (isEmpty()) {
+      <p class="rounded-md bg-bg-surface-soft p-3 text-center text-[13px] text-text-secondary">
+        Start filling the form to see a live preview of your expense.
+      </p>
+    }
+  </div>
+
+  <!-- Callout (design system); inline until the shared Callout component exists -->
+  <div class="flex gap-2.5 rounded-md bg-primary-soft p-3 text-[13px] text-text-secondary">
+    <app-icon-renderer class="flex shrink-0 pt-0.5 text-primary" [iconName]="'info'" [iconColor]="'currentColor'" [size]="16" />
+    <p>When you click any "Create …" action, this panel is temporarily replaced by the creation form for that item.</p>
+  </div>
+</section>

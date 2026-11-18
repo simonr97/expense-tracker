@@ -1,12 +1,13 @@
 <div
-  class="badge-surface inline-flex items-center gap-1.5 rounded-lg px-3 py-1"
-  [style.--category-color]="category().color"
+  class="inline-flex items-center rounded-lg"
+  [class]="dimensions().padding"
+  [style.background-color] = "backgroundColor()"
 >
-  <app-icon-renderer [iconName]="category().icon" [iconColor]="displayColor()" [size]="iconSizePx" />
+  <app-icon-renderer [iconName]="category().icon" [iconColor]="displayColor()" [size]="dimensions().icon" />
   <span
     class="font-medium leading-none whitespace-nowrap"
     [style.color]="displayColor()"
-    [style.font-size.px]="textSizePx"
+    [style.font-size.px]="dimensions().text"
   >
     {{ category().name }}
   </span>

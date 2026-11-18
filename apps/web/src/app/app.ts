@@ -3,10 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { ExpensesGrid } from './expenses/expenses-grid/expenses-grid';
 import { Sidebar } from './shell/sidebar/sidebar';
 import { Topbar } from './shell/topbar/topbar';
+import { ExpenseDetailPanel } from './expenses/expense-detail-panel/expense-detail-panel';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,ExpensesGrid,Sidebar,Topbar],
+  imports: [RouterOutlet,ExpensesGrid,Sidebar,Topbar,ExpenseDetailPanel],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

@@ -18,6 +18,11 @@ enum ExpenseStatus {
   Pending
 }
 
+enum Currency {
+  ARS
+  USD
+}
+
 
 
 model Category {
@@ -36,6 +41,7 @@ model Account {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   expense Expense[]
+  income Income[]
 }
 
 model Merchant {
@@ -46,12 +52,35 @@ model Merchant {
   expense Expense[]
 }
 
+model Income {
+  id String @id @default(uuid())
+  description String
+  amount Decimal @db.Decimal(10,2) 
+  date DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  currency Currency @default(ARS)
+
+  accountId String?
+  account Account? @relation(fields: [accountId], references: [id])
+}
+
+model PaymentMethod {
+  id String @id @default(uuid())
+  name String @db.Citext @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isSystem Boolean @default(false)
+  expense Expense[]
+}
+
 model Expense {
   id String @id @default(uuid())
   description String
   amount Decimal @db.Decimal(10,2)
   notes String?
   status ExpenseStatus @default(Completed)
+  currency Currency @default(ARS)
   date DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -59,9 +88,12 @@ model Expense {
   categoryId String
   category Category @relation(fields: [categoryId], references: [id])
 
-  accountId String
-  account Account @relation(fields: [accountId], references: [id])
+  accountId String?
+  account Account? @relation(fields: [accountId], references: [id], onDelete: Restrict)
 
   merchantId String
   merchant Merchant @relation(fields: [merchantId], references: [id])
+
+  paymentMethodId String
+  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
 }

@@ -8,7 +8,7 @@ Usar los valores tal cual. No reinterpretarlos.
 "La interfaz acompaña al contenido, no compite con él." Claridad antes que decoración, datos fáciles de leer, acciones primarias evidentes, uso moderado del color, profundidad sutil, diseño consistente desktop/mobile.
 
 ## Idioma
-Toda la UI está en **inglés** por ahora: textos, placeholders, `aria-label`, estados vacíos y locale de `Intl` (`'en'`). Los mockups pueden venir con textos en español — se copia el diseño, no el idioma.
+Toda la UI está en **inglés** por ahora: textos, placeholders, `aria-label`, estados vacíos y locale de `Intl` (`'en'`; ver la decisión abierta en "Formato de valores"). Los mockups pueden venir con textos en español — se copia el diseño, no el idioma.
 
 ## Cómo se usan los tokens
 Los tokens viven en el bloque `@theme` de [`apps/web/src/styles.css`](apps/web/src/styles.css) (Tailwind v4). Tailwind genera las utilidades a partir del nombre de la variable:
@@ -80,6 +80,8 @@ Other:         --color-cat-other: #64748B         / soft: #E2E8F0
 ```
 Las categorías del usuario guardan su propio `color` e `icon` en la base de datos, así que **el badge no usa esta paleta**: deriva los tonos del color guardado (ver CategoryBadge). Esta paleta queda para colores por defecto/sugeridos y para gráficos de categorías fijas.
 
+**Paleta del selector de color de categoría** *(decidido 2026-11-02)*: **10 colores** — los 7 de arriba más **fucsia `#D946EF`, lima `#84CC16` y marrón `#92400E`**, elegidos por huecos de matiz y de luminosidad respecto de los existentes. Cada uno lleva su nombre como etiqueta accesible (rose, blue, emerald, violet, amber, teal, slate, fuchsia, lime, brown). Pendiente: probar el contraste del lima en `CategoryBadge` y `CategoryAvatar` (si no alcanza, reemplazarlo por un naranja `#F97316`) y agregar los tres nuevos al `@theme` con su `-soft`. La lista vive como pares **nombre + hex** (el nombre es la etiqueta accesible de cada círculo) dentro de `CategoryQuickCreate` por ahora. Sin hex personalizado en esta versión.
+
 ## Sombras (muy sutiles, nunca duras/negras)
 ```
 --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04)   → cards, inputs, botones
@@ -145,6 +147,7 @@ Accesibilidad: botones sin texto llevan `aria-label`; el item de navegación act
 - **Secundario** (Cancel, Duplicate, Export) — aún no implementado: `background: #FFF; color: #1E293B; border: 1px solid #D7DEE8; border-radius: 12px; height: 40px; font-weight: 500`.
 - **Destructivo** (Delete expense) — aún no implementado: `background: #FFF5F5; color: #EF4444; border: 1px solid #FECACA; border-radius: 12px`.
 - **Link / acción de texto**: `text-sm font-medium text-primary hover:text-primary-hover hover:underline`.
+- **Acción de creación de campo ("+ Create X")** *(implementado 2026-11-02; con `aria-pressed`, `label for`/`id`)*: pill a la derecha del label del campo, en la misma fila. `inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary-selected`, ícono `plus` 16px. Reemplaza al link "Create New X".
 - **Botón de ícono**: `h-10 w-10`, mismo borde/radio/sombra que un input, ícono de 16px. Dos o más relacionados se agrupan en un **segmented control** (ver Shell).
 
 ## Inputs
@@ -177,7 +180,7 @@ Estética "soft dashboard" inspirada en Apple HIG/macOS. La app no es plana: hay
 | Card padre de barra (sidebar) | `bg-bg-surface` | `rounded-lg` (16px) | `shadow-sm` | `p-4` |
 | Control suelto sobre el canvas (búsqueda, filtro de mes) | `bg-bg-surface` + `border-border-light` | `rounded-md` (12px) | `shadow-sm` | el del control (`h-10 px-3`) |
 | Fondo secundario dentro de una card | `bg-bg-surface-soft` | `rounded-md` | — | `p-4` |
-| Panel de detalle / drawer | `bg-bg-surface`, separado del canvas con margen | `rounded-xl` (24px) | `shadow-md` | `p-5`–`p-6` |
+| Panel de detalle / drawer *(2026-11-09: igual que las demás cards, ver "Expense Detail como card")* | `bg-bg-surface`, separado del canvas con margen | `rounded-lg` (16px) | `shadow-sm` | `p-5` |
 | Dropdown / popover | `bg-bg-surface` | `rounded-[14px]` | `shadow-md` | `p-1.5` |
 | Modal / bottom sheet | `bg-bg-surface` | `rounded-xl` | `shadow-lg` | `p-6` desktop / `p-5` mobile |
 
@@ -201,26 +204,28 @@ creación:   text-primary font-semibold, separado con border-t border-border-lig
 ```
 Se cierran con click afuera (`host: { '(document:click)': … }`) y con Escape (`(document:keydown.escape)`).
 
-**Patrón de creación inline — objetivo (Feature F.2, US F.2.1/F.2.2)**
-Cada dropdown extensible (Category, Account, Merchant, Tags) sigue:
-1. Opciones existentes.
-2. Divisor.
-3. Acción fija de creación al final ("+ New category >", "+ New account >") — estilo de acción secundaria, no una opción más.
-4. Al presionarla se abre un **submenú lateral o popup contextual dentro del mismo dropdown** (no un modal aparte).
-5. La entidad recién creada queda **autoseleccionada**.
+**Dropdown de categoría con `CategoryBadge`** *(implementado 2026-11-02 como `CategorySelect`; informado por el usuario)*: el campo Category muestra la categoría elegida y cada opción como `CategoryBadge`. Un `<select>` nativo no puede mostrar íconos ni colores, así que es un **control propio**:
+- Implementa la interfaz de control de Signal Forms (`FormValueControl<string>`), para usarse con `[formField]` como un input.
+- Patrón listbox: disparador con `aria-haspopup="listbox"` y `aria-expanded`; lista `role="listbox"`, opciones `role="option"` + `aria-selected`. Teclado: flechas, Enter, Escape; el foco vuelve al disparador al cerrar.
+- Disparador con forma de input y lista con el estilo de arriba (igual que el selector de mes). Posicionado con `@angular/cdk/overlay` para que no lo corte el `overflow` del modal.
+- Genérico (opciones + template por opción), para reutilizarlo después en Account, Paid To y Payment Method.
 
-Regla UX: **"Primero seleccionar. Crear solo si no existe."** Nunca botones externos permanentes fuera del dropdown para crear.
+**Creación de entidades: ya no hay submenú dentro del dropdown** *(decidido 2026-11-01)*. El patrón anterior (acción "+ New X" al final del dropdown con submenú lateral) queda descartado. La creación se hace en la **columna derecha del modal** (ver "Modal Add Expense"), con el formulario de cada entidad (sin marco compartido), abierta desde la acción "+ Create X" junto al label del campo. Se mantienen:
+- Regla UX: **"Primero seleccionar. Crear solo si no existe."**
+- La entidad recién creada queda **autoseleccionada**.
 
-Submenú "New category": Name, selector de Color (fila de círculos), selector de Icon (grilla), botones Cancel / Create category.
-Submenú "New account": Name, Type (Bank / Cash / Virtual wallet), sin color ni ícono. Botones Cancel / Create account.
-
-> **Estado actual (provisorio):** el formulario de gastos usa `<select>` nativos con un link "Create New Category/Account" arriba que despliega un formulario rápido (`CategoryQuickCreate` / `AccountQuickCreate`) como bloque hijo `bg-bg-surface-soft`. Se reemplaza por el patrón de arriba al implementar F.2.
+> **Estado actual (provisorio):** el formulario de gastos usa `<select>` nativos con un link "Create New X" arriba que despliega un formulario rápido como bloque hijo `bg-bg-surface-soft`, dentro del mismo `<form>`. Se reemplaza por el patrón de "Modal Add Expense".
 
 ## Shell
 
-**Layout** (`app.html`): `flex min-h-screen gap-4 p-4` sobre el canvas; a la izquierda la sidebar, a la derecha un `<main class="flex min-w-0 flex-1 flex-col gap-4">` con la topbar y las cards de contenido.
+**Layout** (`app.html`) *(actualizado 2026-11-09, ver "Layout de tres columnas")*: grid `h-dvh min-h-180 overflow-hidden p-4` sobre el canvas, con columnas sidebar | contenido | Expense Detail y filas topbar | contenido.
+- Columnas `auto minmax(0,1fr) 0rem`; la tercera pasa a `25rem` cuando el host `<app-expense-detail-panel>` tiene contenido (`has-[>app-expense-detail-panel:not(:empty)]`), sin un signal en `App`. Transición de `grid-template-columns` de 250 ms, desactivada con `motion-reduce`.
+- Sin separación entre columnas (una columna de 0 igual sumaría el espacio): la sidebar lleva `mr-4` y el panel `pl-4`. Entre filas, `gap-y-4`.
+- La sidebar ocupa las dos filas; la topbar abarca contenido y panel; el panel arranca debajo de la topbar, con ancho fijo `w-100` para no comprimirse durante la animación.
+- `<main class="flex min-h-0 min-w-0 flex-col gap-4">` contiene las cards de contenido.
+- Provisorios: `min-h-180` (720px) y el ancho del panel (25rem con el `pl-4`).
 
-**Sidebar**: card flotante de barra, `h-full w-64 rounded-lg border border-border-light bg-bg-surface p-4 shadow-sm`. El host (`<app-sidebar>`) es `sticky top-4 h-[calc(100vh-2rem)] shrink-0`, así queda fija al scrollear. Pendiente: sidebar colapsable (B.2.3).
+**Sidebar**: card flotante de barra, `h-full w-64 rounded-lg border border-border-light bg-bg-surface p-4 shadow-sm`. El host (`<app-sidebar>`) lleva `min-h-0` y toma el alto de la fila del grid; ya no es `sticky`, porque la página no scrollea. Pendiente: sidebar colapsable (B.2.3).
 - Logo: cuadrado `h-10 w-10 rounded-md bg-primary text-white shadow-sm` con ícono de 20px; nombre `text-base font-semibold`, subtítulo `text-xs text-text-tertiary`; separado del menú con `border-b border-border-medium` (más oscuro que los divisores normales para marcar el encabezado de la app).
 - Item de navegación: `h-11 rounded-[10px] px-3 gap-3 text-sm`, ícono de 20px, estados según la tabla de Estados de interacción.
 
@@ -232,6 +237,58 @@ Submenú "New account": Name, Type (Bank / Cash / Virtual wallet), sin color ni 
 
 **Búsqueda**: input con ícono (ver Inputs), como control suelto: `border-border-light shadow-sm` en vez de `border-border-medium shadow-xs`, ícono `search` 20px, `w-full`. Placeholder y `aria-label` configurables por `input()`.
 
+## Layout de tres columnas y alto de pantalla *(decidido 2026-11-09; implementados el alto fijo, la grilla sin alto fijo y las columnas sidebar | contenido; falta la columna del panel, la transición y la sidebar colapsable)*
+
+**Regla de alto:** la aplicación entera **cabe en el alto del viewport, sin scroll de página**, a partir de **1920×1080** (y en pantallas más grandes). Solo scrollean regiones internas (la grilla, el panel de detalle). En pantallas con menos de 1080 px de alto se acepta el scroll de página, con un alto mínimo del shell para no comprimir el contenido (el valor se define al armar la pantalla real). No se diseña para pantallas más chicas que eso en esta etapa.
+- Consecuencia: el shell pasa de `min-h-screen` a un alto fijo al viewport con `overflow-hidden` (y un `min-h` para pantallas chicas). La grilla deja de tener alto fijo (hoy `height: 500px` inline) y ocupa lo que sobra de la columna central (`flex-1 min-h-0`), con scroll vertical interno de AG Grid. Cartas y gráficos con alto propio.
+- Verificar siempre a 1920×1080 y, como mínimo de referencia, a 1366×768.
+
+**Estado normal (panel cerrado):** sidebar expandida, contenido central ocupa todo el ancho restante.
+
+**Estado con Expense Detail abierto (se abre al seleccionar un gasto):**
+1. Columna 1, sidebar: se minimiza sola a solo íconos (US B.2.3; tooltip y `aria-label` por ítem).
+2. Columna 2, contenido central: ocupa el espacio entre ambas columnas laterales; la grilla se adapta sin comprimir las columnas más de la cuenta (`minWidth` por columna, scroll horizontal si hace falta).
+3. Columna 3, Expense Detail: aparece a la derecha.
+Al cerrar el panel (o limpiar la selección) la sidebar vuelve a expandirse y el contenido recupera el ancho.
+
+**Mecanismo:** CSS Grid con `grid-template-columns` dinámicas (sidebar | central | panel), transición de **200 a 280 ms**, sin superposiciones ni escalado de componentes, y sin animación con `prefers-reduced-motion`. La columna central lleva `min-w-0` (sin eso un grid no deja que se achique por debajo de su contenido). Riesgo a medir con el panel real: animar columnas recalcula el layout en cada fotograma y AG Grid recalcula sus columnas con cada cambio de ancho.
+
+**Expense Detail como card:** no es un panel de borde a borde. Es una card como la sidebar y la grilla: fondo blanco (`bg-bg-surface`), radio, borde y sombra de las demás cards, sobre el canvas gris.
+- **Alto:** el mismo que el área de contenido bajo la topbar, es decir, la suma del alto de las cartas, los gráficos y la grilla. El alto lo dicta la columna central: el contenido del panel **no** agranda la fila; si no entra, scrollea por dentro.
+- Como la página no scrollea, no hace falta `sticky`.
+- Cabecera con el avatar de categoría y el botón de cerrar fija; los campos scrollean (a confirmar al construirlo). `SidePanel` (`shared/`) tiene un slot `[panelHeader]` debajo del título, fuera de la zona que scrollea, para esto.
+- Mientras todavía no existan cartas y gráficos (Epic D), el panel tiene el alto de la grilla.
+
+**Topbar:** sigue sobre el canvas (no es card). Con el panel abierto abarca la columna central y la del panel, que arranca debajo (a confirmar al implementar). La compactación de buscador, Add Expense, Filter, selector de mes y bloque de usuario con menos ancho se decide con la pantalla real (US B.3.7), usando *container queries* de Tailwind v4 (`@container`) porque dependen del ancho del contenedor y no de la ventana.
+
+**Mobile:** no aplica este layout (ver sección Mobile).
+
+## Escalabilidad responsive *(decidido 2026-11-09; los rangos son propuesta a confirmar; sin implementar)*
+
+**Objetivo:** que la aplicación se vea bien en monitores de cualquier tipo, con **1920×1080 como base** de diseño y las demás resoluciones como casos que se adaptan, no como pantallas aparte. Todas las medidas son en **píxeles CSS**, no físicos: un monitor 4K con escala de 150 % ofrece 2560×1440, un notebook de 1920×1080 con escala de 125 % ofrece 1536×864, y el zoom del navegador también achica el ancho disponible. Diseñar con un layout fluido cubre todos esos casos a la vez.
+
+**Principios técnicos**
+- **Layout fluido, no de tamaños fijos:** anchos con `fr`, `minmax()` y `flex`, sin `px` fijos en contenedores (el `height: 500px` de la grilla es la excepción a eliminar). `min-w-0` en los hijos de un grid o flex que deban poder achicarse.
+- **Container queries para componentes** (`@container` de Tailwind v4): los componentes se adaptan al **ancho de su contenedor**, no al de la ventana. Es lo que necesita este layout, porque abrir Expense Detail angosta la columna central sin que cambie el viewport.
+- **Media queries solo para el shell:** cantidad de columnas, sidebar expandida o colapsada por defecto, y el paso a mobile.
+- **Unidades:** `rem` para tipografía y espaciado, así respeta el tamaño de texto del usuario. Alto del shell con `dvh`, no `vh`. Ningún texto con tamaño fijo en píxeles que impida el zoom.
+- **Anchos mínimos:** cada componente declara el mínimo con el que sigue siendo usable (columnas de la grilla con `minWidth`, cartas con `min-w`) y, por debajo, scroll horizontal interno o menos columnas; nunca solapamiento.
+- **Cartas y gráficos:** fluidos. Las cartas usan columnas automáticas (`repeat(auto-fit, minmax(X, 1fr))`) y bajan de cantidad de columnas solo cuando no entran; los gráficos toman el ancho de su card y se redibujan al cambiar de tamaño.
+
+**Rangos propuestos (ancho en píxeles CSS)**
+- **1536 o más:** layout completo (sidebar expandida, cartas y gráficos en su disposición base).
+- **1280 a 1535:** layout compacto: el panel de detalle algo más angosto y menos columnas de cartas con el panel abierto; la sidebar sigue colapsándose sola al abrirlo.
+- **Menos de 1280:** tablet y mobile, Epic G (drawer o tab bar, lista de cards en lugar de grilla). Pendiente de diseño.
+- **2560 o más (monitores grandes o ultrapanorámicos):** decisión abierta, ver abajo.
+
+**Alto:** vale la regla de "sin scroll de página" a partir de 1080 px de alto. Con menos alto (768, 864, 900) se permite el scroll de página y el shell tiene un `min-h`; el panel de detalle conserva su alto igual al del contenido.
+
+**Decisiones abiertas**
+1. Ancho mínimo soportado del layout de escritorio (propuesta: 1280).
+2. Monitores grandes: dejar que el contenido crezca (más columnas de cartas, la grilla muestra más columnas) o limitarlo con un ancho máximo centrado (propuesta a evaluar: tope alrededor de 2200 a 2400 px) para que las filas y las líneas no queden demasiado largas.
+
+**Pruebas de referencia:** 1280×720, 1366×768, 1440×900, 1536×864, 1920×1080, 2560×1440 y 3440×1440 (ultrapanorámico), más zoom del navegador al 150 % y 200 %.
+
 ## CategoryBadge
 Toma `color` e `icon` de la categoría (base de datos):
 ```
@@ -240,6 +297,70 @@ fondo:      color-mix(in srgb, <color> 15%, white)
 texto/ícono: color-mix(in srgb, <color> 80%, black 20%)
 texto:      13px font-medium; ícono 15px
 ```
+Es la **pill con nombre**: se usa en la grilla, en la fila "Category" del preview, en el dropdown de categoría y como vista previa en el panel de creación de categoría.
+
+## CategoryAvatar *(implementado 2026-11-01; compila, sin verificar visualmente)*
+Imagen de categoría **cuadrada** con esquinas redondeadas (`rounded-md`), **sin nombre**. Se usa en `ExpensePreviewCard` y, a futuro, en el panel de detalle del gasto.
+```
+fondo / ícono: los mismos tonos que CategoryBadge (pastel 15% / ícono 80% + negro 20%)
+tamaños:       input() con opciones fijas — sm 32px (ícono 16) / md 48px (ícono 24) / lg 64px (ícono 32)
+```
+- **Un solo cálculo de tonos:** `shared/color-calculation.ts` expone `colorCalculationForeground(color)` (80% color + 20% negro) y `colorCalculationBackground(color)` (15% color + blanco); `CategoryBadge` y `CategoryAvatar` las usan. No se duplican.
+- **Sin categoría elegida el avatar sí se muestra**, con el valor por defecto: color `#768bad` e ícono `receipt-text` *(decidido 2026-11-01; reemplaza "sin categoría no se muestra avatar")*. Recibe `ExpenseCategory | undefined`. `CategoryBadge` acepta `Pick<Category, 'name' | 'color' | 'icon'>`.
+- **Accesibilidad:** objetivo: `input()` opcional de etiqueta; con etiqueta → `role="img"` + `aria-label`, sin etiqueta → `aria-hidden="true"` (caso habitual: el nombre ya está al lado). **Hoy siempre es `aria-hidden="true"`; el `input()` de etiqueta está pendiente.**
+- Revisar contraste del ícono en colores claros (amarillo).
+
+## Modal Add Expense *(decidido 2026-11-01; layout de dos columnas y estado del panel implementados, compila, sin verificar visualmente; F.3.1 a F.3.6)*
+Las imágenes de referencia del modal son **guía de composición**; los valores (colores, tipografía, radios, labels) salen de este documento.
+
+**Estructura**
+- Superficie de modal (ver "Superficies y composición"): `rounded-xl bg-bg-surface p-6 shadow-lg`, ancho `w-[min(880px,calc(100vw-2rem))]` *(implementado)*.
+- Encabezado: cuadro de ícono `h-12 w-12 rounded-md bg-primary-soft text-primary` con `plus` 24px; título `text-xl font-semibold`; subtítulo `text-[13px] text-text-secondary`; botón de ícono de cerrar (`x`, `aria-label="Close"`) a la derecha.
+- Cuerpo en **dos columnas**: `grid grid-cols-1 md:grid-cols-2 gap-5`. En mobile la columna derecha baja debajo.
+  - **Izquierda:** el `<form id="expense-form">` con los campos, incluido el campo `date` (`<input type="date">`, requerido). Labels según "Cards y formularios" (`text-[13px] text-text-secondary`); cada campo con entidad creable lleva la acción "+ Create X" (ver Botones) a la derecha del label. Campo requerido: asterisco `text-danger` con `aria-hidden="true"`; el requisito lo anuncia el `required` del control.
+  - **Derecha:** siempre visible. Por defecto muestra `ExpensePreviewCard`; al tocar "+ Create X" la reemplaza el formulario de creación de esa entidad. Al crear o cancelar vuelve al preview. Solo un panel de creación a la vez: el estado es **un único signal** `openCreationForm` con unión de literales `'category' | 'account' | 'merchant' | 'payment' | 'preview'` (inicial `'preview'`), mostrado con `@switch`; apretar el botón "Create" del panel activo vuelve a `'preview'`. La columna derecha queda **fuera** del `<form>` de la izquierda (no hay `<form>` anidados).
+- Pie: `border-t border-border-light pt-4 flex justify-end gap-3` con Cancel (secundario) y Save Expense (primario). El botón de envío está **fuera** del `<form>` y se asocia con `form="expense-form"`.
+- **Escape y la X cierran todo el modal sin pedir confirmación** *(decidido 2026-11-01; se pierde lo escrito sin guardar)*.
+- **Confirmación de descarte** *(F.3.6, decidido 2026-11-01, no implementado)*: si el panel de creación tiene cambios respecto de su valor inicial, Cancel y abrir otro "+ Create X" piden confirmación **dentro del propio panel**; no se abre un segundo modal. Los valores por defecto (color e ícono de Category) no cuentan como "escrito". La interfaz exacta de la confirmación sigue pendiente de decidir.
+- Mientras se crea una entidad, su campo muestra el placeholder; al crearla, el valor nuevo queda autoseleccionado. *(Pendiente: si al cancelar se conserva la elección previa.)*
+- **Selector Expense | Income** *(implementado 2026-11-02 en `AddTransactionDialog`)*: `fieldset` de radios arriba del cuerpo; el seleccionado es `bg-primary` (expense) o `bg-success` (income). El encabezado cambia con el tipo (título, subtítulo e ícono: expense usa el ícono por defecto de categoría, income `banknote-arrow-up`). `AddTransactionDialog` (`shell/`) es el padre; `ExpenseForm` e `IncomeQuickCreate` solo tienen el contenido. Notes lleva contador y tope de 200 caracteres.
+
+**Paneles de creación (sin marco compartido)** *(decidido 2026-11-01; reemplaza a `PanelFrame`)*: no existe un componente marco entre `ExpenseForm` y los formularios de creación. Los formularios de la columna derecha (`QuickCreateForm` para Paid To, Account y Payment Method, y `CategoryQuickCreate`) se muestran directamente y cada uno lleva su propio encabezado y acciones, **con las mismas clases de Tailwind** para verse idénticos. Si aparece un tercer panel, se evalúa extraer el marco.
+```
+contenedor: rounded-md bg-bg-surface-soft p-4   (hijo: sin borde ni sombra)
+encabezado: título text-base font-semibold · subtítulo text-[13px] text-text-secondary  (sin flecha de volver)
+error:      mensaje del servidor, role="alert", rounded-md bg-danger-soft p-3 text-[13px] text-danger  (incluye el 409 por duplicado; se conservan los datos para reintentar)
+acciones:   Cancel (secundario) a la izquierda, Create (primario) a la derecha, ambos flex-1
+```
+**Cancel es el único modo de volver al preview.** Estado: sin hacer (el estilo de los paneles de creación está pendiente).
+
+**`Callout`** (`shared/` objetivo; hoy está **inline** en la vista previa y se extrae si se reutiliza): aviso informativo. `flex gap-2.5 rounded-md bg-primary-soft p-3 text-[13px] text-text-secondary`, ícono `info` 16px `text-primary`, contenido por `ng-content`.
+
+**`ExpensePreviewCard`** *(implementada 2026-11-01 en `expenses/expense-form/expense-preview-card/`; compila, sin verificar visualmente)* (presentacional, solo lectura; no es el panel de detalle):
+- Recibe por `input.required<ExpensePreview>()` un objeto ya resuelto (nombres, no ids) armado por el formulario con un `computed` (`previewData`) que resuelve los ids contra las listas cargadas y devuelve `undefined` si no hay selección o la lista no cargó.
+- Encabezado "Expense Preview" + subtítulo sobre el fondo `bg-bg-surface-soft`; adentro, tarjeta blanca hija `rounded-md bg-bg-surface p-4` (sin sombra).
+- Tarjeta: `CategoryAvatar` **lg** *(cambia el md anterior; a confirmar)* + nombre del gasto `text-base font-semibold` + monto `text-[24px] font-semibold`. **Sin categoría elegida el avatar se muestra con el valor por defecto** (ver CategoryAvatar). Monto 0 = faltante. Una caja "Start filling the form…" aparece solo con el formulario vacío.
+- Datos (Date, Paid To, Account, Payment Method, Category, Notes) en `<dl>` con `divide-y divide-border-light`: ícono 16px `text-text-tertiary`, término `text-[13px] text-text-secondary`, valor `text-sm text-text-primary`. Category como `CategoryBadge`. Notas con `whitespace-pre-line`. La fecha `YYYY-MM-DD` se arma como fecha **local** (evita el corrimiento de un día en UTC-3).
+- Valores faltantes: guion **"—"** en `text-text-tertiary`. Nunca datos ficticios.
+- Sin `aria-live` (se anunciaría con cada tecla).
+
+**`ColorSwatchPicker`**: grupo de radios estilizado — `<fieldset>` + `<legend>`, `<input type="radio">` ocultos (`sr-only`, `peer`) dentro de `<label>` que dibujan círculos `h-7 w-7 rounded-full`.
+- Seleccionado: anillo `ring-2 ring-offset-2 ring-text-primary` + ícono `check` 16px (no solo color). Foco: `peer-focus-visible:ring-4 peer-focus-visible:ring-primary/12`.
+- Nombre accesible = nombre del color. Muestra el hex del color elegido en un campo de **solo lectura** *(decidido 2026-11-01; sin hex personalizado en esta versión)*.
+
+**`IconGridPicker`** *(implementado 2026-11-02)*: grilla de **5×2 con 10 íconos y sin celda "…"** *(decidido 2026-11-02; reemplaza "9 íconos + …")*; el catálogo completo queda fuera por ahora. `FormValueControl`. La lista de íconos (`preSetIcons`) entra por `input()`.
+- Íconos: grupo de radios estilizado (igual que el de color); celda `aspect-square rounded-md border border-border-light`, ícono 20px `text-text-secondary`, hover `bg-bg-hover`.
+- Seleccionada: fondo pastel + borde + ícono con los tonos del color de la categoría (misma función que `CategoryAvatar`).
+- "…" es un **botón** aparte (no una opción), `aria-label="More icons"`; el catálogo completo queda para más adelante.
+- Debajo, vista previa de la categoría con `CategoryBadge`.
+
+## Formato de valores *(decidido 2026-11-01; locale de los montos reabierto)*
+> **Decisión abierta:** el código ya usa `'es'` para los montos y `'en'` para la fecha; no está cerrado. Opciones evaluadas: `'es'` (`45.500,00 ARS` / `45.500,00 US$`; no agrupa números de 4 cifras: `1500,00`), `'es-AR'` (`$ 45.500,00` / `US$ 45.500,00`) y `'en'` con `currencyDisplay: 'code'` (`ARS 45,500.00` / `USD 45,500.00`). Hasta decidir, lo de abajo describe el criterio original.
+
+Locale **inglés** (`'en'` en el criterio original) por ahora:
+- Montos: `Intl.NumberFormat('en', { style: 'currency', currency })` → `ARS 45,500.00`. Formateador creado una sola vez.
+- Fechas: `dateStyle: 'medium'` → `Dec 10, 2023` (evita la ambigüedad día/mes).
+- Las validaciones y sus mensajes salen del código (por ejemplo `min 0.01`), no de los mockups.
 
 ## Charts
 - **Donut**: un color por categoría. Centro: monto total, 22-24px, font-weight 700, label "Total" debajo.
@@ -281,5 +402,6 @@ Tamaños: sm 16 / md 20 / lg 24 / xl 32.
 Color: pasar `[iconColor]="'currentColor'"` y controlar el color con clases de texto en el contenedor, para que siga los estados de interacción.
 
 ## Componentes del sistema
-Implementados: AppShell (parcial), Sidebar, Topbar, MonthSelector, SearchInput, CategoryBadge, ExpensesGrid (TransactionTable), ExpenseForm, CategoryQuickCreate, AccountQuickCreate.
-Pendientes: SummaryCard, ChartCard, TransactionRow, InspectorPanel, AddExpenseModal, SelectDropdown, CreateNestedSubmenu, MobileBottomSheet, MobileTabBar.
+Implementados: AddTransactionDialog, CategorySelect, ColorSwatchPicker, IconGridPicker, IncomeQuickCreate (2026-11-02, informados por el usuario), AppShell (parcial), Sidebar, Topbar, MonthSelector, SearchInput, CategoryBadge, ExpensesGrid (TransactionTable), ExpenseForm (dos columnas, 2026-11-01), CategoryQuickCreate, QuickCreateForm, CategoryAvatar y ExpensePreviewCard (2026-11-01, sin verificar visualmente).
+Pendientes: Callout compartido (hoy duplicado en cuatro lugares), banner de error del servidor, SummaryCard, ChartCard, TransactionRow, InspectorPanel, MobileBottomSheet, MobileTabBar.
+Descartados: CreateNestedSubmenu (2026-11-01: la creación pasa a la columna derecha del modal) y PanelFrame (2026-11-01: cada formulario de creación lleva su propio encabezado y acciones).
